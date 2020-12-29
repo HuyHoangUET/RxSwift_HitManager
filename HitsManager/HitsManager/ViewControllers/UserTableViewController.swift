@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import RxSwift
+import RxCocoa
 
 class UserTableViewController: UIViewController {
     
@@ -16,15 +17,21 @@ class UserTableViewController: UIViewController {
     
     private var didLikeHits: [Hit] = []
     var userViewModel: UserViewModel?
-    var didDislikeImagesId: Set<Int> = []
+    private var didDislikeImagesId: Set<Int> = []
+    private var didLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
+    private let bag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         didLikeHits = userViewModel?.getDidLikeHit(didLikeHits: DidLikeHit.getListDidLikeHit()) ?? []
         hitTableView.register(UINib.init(nibName: "TableViewCell", bundle: nil),
                               forCellReuseIdentifier: "cell")
         scrollToRow()
+        
+        var value = didLikeHitsRelay.value
+        value.append(contentsOf: didLikeHits)
+        didLikeHitsRelay.accept(value)
+        initUserTableViewCell()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,46 +52,24 @@ class UserTableViewController: UIViewController {
             DidLikeHit.deleteAnObject(id: id)
         }
     }
-}
-
-// Create cell
-extension UserTableViewController: UITableViewDelegate, UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return didLikeHits.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = initHittableViewCell(indexPath: indexPath)
-        return cell
-    }
-}
-
-// Display cell
-extension UserTableViewController {
-    func initHittableViewCell(indexPath: IndexPath) -> HitTableViewCell {
-        guard userViewModel != nil else {
-            return HitTableViewCell()
-        }
-        guard let cell = hitTableView.dequeueReusableCell(withIdentifier: "cell") as? HitTableViewCell else {
-            return HitTableViewCell()
-        }
-        guard let hit = didLikeHits[safeIndex: indexPath.row] else {return HitTableViewCell()}
-        cell.hit = hit
-        cell.setHeightOfHitImageView(imageWidth: CGFloat(hit.imageWidth),
-                                     imageHeight: CGFloat(hit.imageHeight))
-        cell.delegate = self
-        cell.handleLikeButton(hit: hit, didDislikeImagesId: didDislikeImagesId)
-        
-        // user imageview
-        cell.setImageForUserView()
-        
-        // hit imageview
-        cell.setImageForHitImageView()
-        return cell
+    // Create cell
+    func initUserTableViewCell() {
+        didLikeHitsRelay
+            .bind(to: hitTableView.rx.items(cellIdentifier: "cell", cellType: HitTableViewCell.self)) { indexPath,hit,cell in
+                cell.hit = hit
+                cell.setHeightOfHitImageView(imageWidth: CGFloat(hit.imageWidth),
+                                             imageHeight: CGFloat(hit.imageHeight))
+                cell.delegate = self
+                cell.handleLikeButton(hit: hit, didDislikeImagesId: self.didDislikeImagesId)
+                
+                // user imageview
+                cell.setImageForUserView()
+                
+                // hit imageview
+                cell.setImageForHitImageView()
+            }
+            .disposed(by: bag)
     }
 }
 
