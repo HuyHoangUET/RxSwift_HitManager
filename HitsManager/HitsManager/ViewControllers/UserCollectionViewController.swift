@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 class UserCollectionViewController: UIViewController{
     
@@ -22,6 +23,7 @@ class UserCollectionViewController: UIViewController{
     private let userViewModel = UserViewModel()
     private var didLikeHits: [Hit] = []
     private var didLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
+    private var didDisLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
     private let bag = DisposeBag()
     
     override func viewDidLoad() {
@@ -33,10 +35,17 @@ class UserCollectionViewController: UIViewController{
         customUserImage()
         customUsernameLabel()
         
-        var value = didLikeHitsRelay.value
-        value.append(contentsOf: didLikeHits)
-        didLikeHitsRelay.accept(value)
-        initUserCollectionViewCell()
+//        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
+//          configureCell: { dataSource, tableView, indexPath, item in
+//            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! HitCollectionViewCell
+//            cell.hit = item
+//            return cell
+//        })
+//        
+//        Observable.just(didLikeHits)
+//            .map { SectionModel(model: "", items: $0)}
+//            .bind(to: imageCollectionView.rx.items(dataSource: dataSource))
+//            .disposed(by: bag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,11 +58,16 @@ class UserCollectionViewController: UIViewController{
             imageCollectionView.reloadData()
         }
         customNumberOfImageLabel()
+        
+        var value = didLikeHitsRelay.value
+        value.append(contentsOf: didLikeHits)
+        didLikeHitsRelay.accept(value)
+        initUserCollectionViewCell()
+        handleSellectCell()
     }
     
     // Create cell
     func initUserCollectionViewCell() {
-        
         didLikeHitsRelay
             .bind(to: imageCollectionView.rx.items(cellIdentifier: "cell", cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.likeButton.isHidden = true
@@ -99,20 +113,6 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return SizeOfCollectionViewItem.getMinimumLineSpacingForSection()
-    }
-}
-
-// Display collectionView cell
-extension UserCollectionViewController {
-    func initHitCollectionViewCell(indexPath: IndexPath) -> HitCollectionViewCell {
-        guard let cell = imageCollectionView.dequeueReusableCell(withReuseIdentifier: "cell",
-                                                                      for: indexPath) as? HitCollectionViewCell else {
-            return HitCollectionViewCell()
-        }
-        cell.hit = didLikeHits[indexPath.row]
-        cell.likeButton.isHidden = true
-        cell.setImage()
-        return cell
     }
 }
 
