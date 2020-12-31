@@ -16,6 +16,8 @@ class UserViewModel {
     var chosenIndexPath: Observable<IndexPath> {
         return chosenIndexPathSubject.asObserver()
     }
+    var didLikeHits: [Hit] = []
+    var didLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
     
     func getDidLikeHit(didLikeHits: [DidLikeHit]) -> [Hit] {
         var hits: [Hit] = []
