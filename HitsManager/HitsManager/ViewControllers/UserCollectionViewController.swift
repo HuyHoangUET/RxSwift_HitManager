@@ -35,17 +35,17 @@ class UserCollectionViewController: UIViewController{
         customUserImage()
         customUsernameLabel()
         
-        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
-          configureCell: { dataSource, tableView, indexPath, item in
-            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! HitCollectionViewCell
-            cell.hit = item
-            return cell
-        })
-        
-        Observable.just(didLikeHits)
-            .map { SectionModel(model: "", items: $0)}
-            .bind(to: imageCollectionView.rx.items(dataSource: dataSource))
-            .disposed(by: bag)
+//        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
+//          configureCell: { dataSource, tableView, indexPath, item in
+//            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! HitCollectionViewCell
+//            cell.hit = item
+//            return cell
+//        })
+//        
+//        Observable.just(didLikeHits)
+//            .map { SectionModel(model: "", items: $0)}
+//            .bind(to: imageCollectionView.rx.items(dataSource: dataSource))
+//            .disposed(by: bag)
     }
     
     override func viewWillAppear(_ animated: Bool) {
