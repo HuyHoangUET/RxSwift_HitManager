@@ -12,12 +12,12 @@ import RxDataSources
 
 struct SectionOfHit {
     var items: [Item]
-  }
-  extension SectionOfHit: SectionModelType {
+}
+extension SectionOfHit: SectionModelType {
     typealias Item = Hit
 
-     init(original: SectionOfHit, items: [Item]) {
-      self = original
-      self.items = items
-    }
-  }
+        init(original: SectionOfHit, items: [Item]) {
+            self = original
+            self.items = items
+        }
+}

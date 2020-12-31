@@ -7,6 +7,9 @@
 
 import Foundation
 import RealmSwift
+import RxCocoa
+import RxSwift
+import RxRealm
 
 class DidLikeHit: Object {
     @objc dynamic var id = 0
@@ -67,14 +70,18 @@ class DidLikeHit: Object {
         }
     }
     
-    static func getListDidLikeHit() -> [DidLikeHit] {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(self)
-            let didLikeHits = Array(results)
-            return didLikeHits
-        } catch {
-            return []
+    static func getListDidLikeHit() -> Observable<[DidLikeHit]> {
+        return Observable.create { observer in
+            do {
+                let realm = try Realm()
+                let results = realm.objects(self)
+                let didLikeHits = Array(results)
+                observer.onNext(didLikeHits)
+                observer.onCompleted()
+            } catch {
+                return Disposables.create()
+            }
+            return Disposables.create()
         }
     }
 }
