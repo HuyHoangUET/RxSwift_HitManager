@@ -21,62 +21,52 @@ class UserCollectionViewController: UIViewController{
     @IBOutlet weak var imageCollectionView: UICollectionView!
     
     private let userViewModel = UserViewModel()
-    private var didLikeHits: [Hit] = []
-    private var didLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
-    private var didDisLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
     private let bag = DisposeBag()
+    var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         imageCollectionView.delegate = self
-        didLikeHits = userViewModel.getDidLikeHit(didLikeHits: DidLikeHit.getListDidLikeHit())
         imageCollectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil),
                                      forCellWithReuseIdentifier: "cell")
         customUserImage()
         customUsernameLabel()
         
-//        let dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
-//          configureCell: { dataSource, tableView, indexPath, item in
-//            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! HitCollectionViewCell
-//            cell.hit = item
-//            return cell
-//        })
-//        
-//        Observable.just(didLikeHits)
-//            .map { SectionModel(model: "", items: $0)}
-//            .bind(to: imageCollectionView.rx.items(dataSource: dataSource))
-//            .disposed(by: bag)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        let newDidLikeHits = userViewModel.getDidLikeHit(didLikeHits: DidLikeHit.getListDidLikeHit())
-        let setDidLikeHits = Set(didLikeHits)
-        let setNewDidLikeHits = Set(newDidLikeHits)
-        
-        if setDidLikeHits != setNewDidLikeHits {
-            didLikeHits = newDidLikeHits
-            imageCollectionView.reloadData()
-        }
-        customNumberOfImageLabel()
-        
-        var value = didLikeHitsRelay.value
-        value.append(contentsOf: didLikeHits)
-        didLikeHitsRelay.accept(value)
+        userViewModel.updateDidLikeHits()
         initUserCollectionViewCell()
         handleSellectCell()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        if userViewModel.isDatabaseChange {
+            self.imageCollectionView.dataSource = nil
+            userViewModel.updateDidLikeHits()
+        }
+        customNumberOfImageLabel()
+    }
+}
+
+// MARK: - cell
+extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
-        didLikeHitsRelay
-            .bind(to: imageCollectionView.rx.items(cellIdentifier: "cell", cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
-                cell.likeButton.isHidden = true
-                cell.hit = hit
-                cell.setImage()
-            }
-            .disposed(by: bag)
+        // dataSourse
+        dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
+          configureCell: { dataSource, collectionView, indexPath, item in
+            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HitCollectionViewCell
+            cell.hit = item
+            cell.configureCell()
+            return cell
+        })
+        userViewModel.didLikeHitsRelay.subscribe(onNext: { hits in
+            let sections = [SectionOfHit(items: hits)]
+            Observable.just(sections)
+                .bind(to: self.imageCollectionView.rx.items(dataSource: self.dataSource))
+                .disposed(by: self.bag)
+        })
+        .disposed(by: bag)
     }
-    
+
     // Handle did sellect cell
     func handleSellectCell() {
         imageCollectionView.rx.itemSelected
@@ -86,10 +76,7 @@ class UserCollectionViewController: UIViewController{
             }
             .disposed(by: bag)
     }
-}
-
-// Custom cell
-extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
+    // Custom cell
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -116,7 +103,7 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// Custom user view
+// MARK: - userView
 extension UserCollectionViewController {
     func customUserImage() {
         userImageView.layer.cornerRadius = userImageView.frame.width / 2.0
@@ -128,7 +115,7 @@ extension UserCollectionViewController {
     }
     
     func customNumberOfImageLabel() {
-        numberOfImagesLabel.text = "\(didLikeHits.count) ảnh đã thích"
+        numberOfImagesLabel.text = "\(userViewModel.didLikeHitsRelay.value.count) ảnh đã thích"
     }
 }
 

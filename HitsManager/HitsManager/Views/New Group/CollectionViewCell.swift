@@ -23,7 +23,7 @@ class HitCollectionViewCell: UICollectionViewCell {
         likeButton.setImage(nil, for: .normal)
     }
     
-    func setImage() {
+    func configureCell() {
         guard hit.imageURL != "" else { return }
         let options = ImageLoadingOptions(
             placeholder: UIImage(named: "placeholder")

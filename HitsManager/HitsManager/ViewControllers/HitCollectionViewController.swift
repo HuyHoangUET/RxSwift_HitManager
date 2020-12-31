@@ -47,7 +47,7 @@ class HitCollectionViewController: UIViewController {
                 let hitId = hit.id
                 cell.handleLikeButton(hitId: hitId)
                 cell.hit = hit
-                cell.setImage()
+                cell.configureCell()
             }
             .disposed(by: bag)
     }
