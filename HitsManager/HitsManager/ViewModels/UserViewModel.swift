@@ -23,6 +23,9 @@ class UserViewModel {
     var didDislikeImagesId: Set<Int> = []
     private let bag = DisposeBag()
     var isDatabaseChange = false
+    var collectionViewItem = BehaviorRelay<[Hit]>(value: [])
+    var tableViewItem = BehaviorRelay<[Hit]>(value: [])
+    
     func updateDidLikeHits() {
         do {
             var hits: [Hit] = []
@@ -51,5 +54,21 @@ class UserViewModel {
         } catch {
             return
         }
+    }
+    
+    func updateCollectionView() {
+        didLikeHitsRelay
+            .subscribe(onNext: { hits in
+                self.collectionViewItem.accept(hits)
+            })
+            .disposed(by: bag)
+    }
+    
+    func updateTableView() {
+        didLikeHitsRelay
+            .subscribe(onNext: { hits in
+                self.tableViewItem.accept(hits)
+            })
+            .disposed(by: bag)
     }
 }

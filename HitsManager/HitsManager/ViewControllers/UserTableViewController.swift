@@ -18,6 +18,7 @@ class UserTableViewController: UIViewController {
     
     var userViewModel: UserViewModel?
     private let bag = DisposeBag()
+    private var isSubcribe = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,6 +38,8 @@ class UserTableViewController: UIViewController {
             return
         }
         if userViewModel!.isDatabaseChange {
+            isSubcribe = true
+            hitTableView.dataSource = nil
             let userCollectionView = UserCollectionViewController()
             if userCollectionView.imageCollectionView != nil {
                 userCollectionView.imageCollectionView.dataSource = nil
@@ -47,14 +50,14 @@ class UserTableViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(true)
+        super.viewWillDisappear(false)
         guard userViewModel != nil else {
             return
         }
         for id in userViewModel!.didDislikeImagesId {
             DidLikeHit.deleteAnObject(id: id)
         }
-        hitTableView.dataSource = nil
+        isSubcribe = false
     }
     
     // Create cell
@@ -73,13 +76,17 @@ class UserTableViewController: UIViewController {
             cell.configureCell()
             return cell
         })
-        userViewModel!.didLikeHitsRelay.subscribe(onNext: { hits in
-            let sections = [SectionOfHit(items: hits)]
-            Observable.just(sections)
-                .bind(to: self.hitTableView.rx.items(dataSource: dataSource))
-                .disposed(by: self.bag)
-        })
-        .disposed(by: bag)
+        userViewModel!.didLikeHitsRelay
+            .takeWhile { hits in
+                self.isSubcribe == true
+            }
+            .subscribe(onNext: { hits in
+                let sections = [SectionOfHit(items: hits)]
+                Observable.just(sections)
+                    .bind(to: self.hitTableView.rx.items(dataSource: dataSource))
+                    .disposed(by: self.bag)
+            })
+            .disposed(by: bag)
     }
 }
 

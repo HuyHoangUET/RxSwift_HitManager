@@ -23,6 +23,7 @@ class UserCollectionViewController: UIViewController{
     private let userViewModel = UserViewModel()
     private let bag = DisposeBag()
     var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
+    private var isSubcribe = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +40,10 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        isSubcribe = true
         if userViewModel.isDatabaseChange {
+            isSubcribe = true
+            self.imageCollectionView.dataSource = nil
             userViewModel.updateDidLikeHits()
             userViewModel.isDatabaseChange = false
         }
@@ -48,7 +52,7 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(false)
-        imageCollectionView.dataSource = nil
+        isSubcribe = false
     }
 }
 
@@ -64,13 +68,17 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
             cell.configureCell()
             return cell
         })
-        userViewModel.didLikeHitsRelay.subscribe(onNext: { hits in
-            let sections = [SectionOfHit(items: hits)]
-            Observable.just(sections)
-                .bind(to: self.imageCollectionView.rx.items(dataSource: self.dataSource))
-                .disposed(by: self.bag)
-        })
-        .disposed(by: bag)
+        userViewModel.didLikeHitsRelay
+            .takeWhile { hits in
+                self.isSubcribe == true
+            }
+            .subscribe(onNext: { hits in
+                let sections = [SectionOfHit(items: hits)]
+                Observable.just(sections)
+                    .bind(to: self.imageCollectionView.rx.items(dataSource: self.dataSource))
+                    .disposed(by: self.bag)
+            })
+            .disposed(by: bag)
     }
 
     // Handle did sellect cell
