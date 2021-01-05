@@ -30,9 +30,10 @@ class UserCollectionViewController: UIViewController{
         imageCollectionView.delegate = self
         imageCollectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil),
                                      forCellWithReuseIdentifier: "cell")
+        // display user
         customUserImage()
         customUsernameLabel()
-        
+        // display tableviewcell
         userViewModel.updateDidLikeHits()
         initUserCollectionViewCell()
         handleSellectCell()
@@ -40,6 +41,7 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        // update data for collectionView
         if userViewModel.isDatabaseChange {
             isSubcribe = true
             self.imageCollectionView.dataSource = nil
@@ -68,6 +70,7 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
             cell.configureCell()
             return cell
         })
+        // bind to collectionVew
         userViewModel.didLikeHitsRelay
             .takeWhile { hits in
                 self.isSubcribe == true

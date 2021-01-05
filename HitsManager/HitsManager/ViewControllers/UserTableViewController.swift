@@ -27,8 +27,9 @@ class UserTableViewController: UIViewController {
         }
         hitTableView.register(UINib.init(nibName: "TableViewCell", bundle: nil),
                               forCellReuseIdentifier: "cell")
+        // show sellected image
         scrollToRow()
-        
+        // init cell
         initUserTableViewCell()
     }
     
@@ -37,6 +38,7 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
+        // update data
         if userViewModel!.isDatabaseChange {
             isSubcribe = true
             hitTableView.dataSource = nil
@@ -49,6 +51,7 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
+        // delete disLiked image
         for id in userViewModel!.didDislikeImagesId {
             DidLikeHit.deleteAnObject(id: id)
         }
@@ -72,6 +75,7 @@ class UserTableViewController: UIViewController {
             cell.configureCell()
             return cell
         })
+        // bind to tableView
         userViewModel!.didLikeHitsRelay
             .takeWhile { hits in
                 self.isSubcribe == true
@@ -93,10 +97,11 @@ extension UserTableViewController {
                 return
             }
             if self.userViewModel!.isDisplayCellAtChosenIndexPath {
-                self.userViewModel?.chosenIndexPath.subscribe(onNext: { indexPath in
-                    self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
-                })
-                .disposed(by: DisposeBag())
+                self.userViewModel?.chosenIndexPath
+                    .subscribe(onNext: { indexPath in
+                        self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                    })
+                    .disposed(by: DisposeBag())
             }
         }
     }
