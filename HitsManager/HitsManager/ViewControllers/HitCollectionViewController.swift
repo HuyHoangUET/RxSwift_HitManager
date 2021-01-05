@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-class HitCollectionViewController: UIViewController {
+class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
     // MARK: - outlet
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mainView: UIView!
@@ -25,12 +25,9 @@ class HitCollectionViewController: UIViewController {
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
         collectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "cell")
-        viewModel.getHitsByPage().subscribe(onNext: {[weak self] done in
-            self?.initHitCollectionViewCell()
-        })
-        .disposed(by: bag)
-        
-        handleSellectCell()
+        viewModel.getHitsByPage()
+        initHitCollectionViewCell()
+        handleSellectedCell()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,7 +37,6 @@ class HitCollectionViewController: UIViewController {
     
     // Create cell
     func initHitCollectionViewCell() {
-        
         viewModel.hitsRelay
             .bind(to: collectionView.rx.items(cellIdentifier: "cell", cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.delegate = self
@@ -51,9 +47,8 @@ class HitCollectionViewController: UIViewController {
             }
             .disposed(by: bag)
     }
-    
-    // Did sellect cell
-    func handleSellectCell() {
+    // sellected cell
+    func handleSellectedCell() {
         collectionView.rx.itemSelected
             .bind { indexPath in
                 if self.viewModel.sellectedCell != indexPath {
@@ -103,11 +98,7 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
 extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView,
                         prefetchItemsAt indexPaths: [IndexPath]) {
-        
-        viewModel.getHitsInNextPage(indexPaths: indexPaths).subscribe(onNext: { done in
-            collectionView.reloadItems(at: indexPaths)
-        })
-        .disposed(by: bag)
+        viewModel.getHitsInNextPage(indexPaths: indexPaths)
     }
 }
 

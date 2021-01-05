@@ -22,7 +22,7 @@ class UserCollectionViewController: UIViewController{
     
     private let userViewModel = UserViewModel()
     private let bag = DisposeBag()
-    var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
+    private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
     private var isSubcribe = true
     
     override func viewDidLoad() {
@@ -30,9 +30,10 @@ class UserCollectionViewController: UIViewController{
         imageCollectionView.delegate = self
         imageCollectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil),
                                      forCellWithReuseIdentifier: "cell")
+        // display user
         customUserImage()
         customUsernameLabel()
-        
+        // display tableviewcell
         userViewModel.updateDidLikeHits()
         initUserCollectionViewCell()
         handleSellectCell()
@@ -40,7 +41,7 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        isSubcribe = true
+        // update data for collectionView
         if userViewModel.isDatabaseChange {
             isSubcribe = true
             self.imageCollectionView.dataSource = nil
@@ -65,9 +66,11 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
           configureCell: { dataSource, collectionView, indexPath, item in
             let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HitCollectionViewCell
             cell.hit = item
+            cell.likeButton.isHidden = true
             cell.configureCell()
             return cell
         })
+        // bind to collectionVew
         userViewModel.didLikeHitsRelay
             .takeWhile { hits in
                 self.isSubcribe == true

@@ -27,8 +27,9 @@ class UserTableViewController: UIViewController {
         }
         hitTableView.register(UINib.init(nibName: "TableViewCell", bundle: nil),
                               forCellReuseIdentifier: "cell")
+        // show sellected image
         scrollToRow()
-        
+        // init cell
         initUserTableViewCell()
     }
     
@@ -37,15 +38,11 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
+        // update data
         if userViewModel!.isDatabaseChange {
             isSubcribe = true
             hitTableView.dataSource = nil
-            let userCollectionView = UserCollectionViewController()
-            if userCollectionView.imageCollectionView != nil {
-                userCollectionView.imageCollectionView.dataSource = nil
-            }
             userViewModel!.updateDidLikeHits()
-            userViewModel!.isDatabaseChange = false
         }
     }
     
@@ -54,6 +51,7 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
+        // delete disLiked image
         for id in userViewModel!.didDislikeImagesId {
             DidLikeHit.deleteAnObject(id: id)
         }
@@ -73,9 +71,11 @@ class UserTableViewController: UIViewController {
             cell.setHeightOfHitImageView(imageWidth: CGFloat(item.imageWidth),
                                                          imageHeight: CGFloat(item.imageHeight))
             cell.handleLikeButton(hit: item, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
+            cell.delegate = self
             cell.configureCell()
             return cell
         })
+        // bind to tableView
         userViewModel!.didLikeHitsRelay
             .takeWhile { hits in
                 self.isSubcribe == true
@@ -97,10 +97,11 @@ extension UserTableViewController {
                 return
             }
             if self.userViewModel!.isDisplayCellAtChosenIndexPath {
-                self.userViewModel?.chosenIndexPath.subscribe(onNext: { indexPath in
-                    self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
-                })
-                .disposed(by: DisposeBag())
+                self.userViewModel?.chosenIndexPath
+                    .subscribe(onNext: { indexPath in
+                        self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                    })
+                    .disposed(by: DisposeBag())
             }
         }
     }
@@ -113,5 +114,6 @@ extension UserTableViewController: UserTableViewCellDelegate {
     
     func didDisLikeImage(id: Int) {
         userViewModel?.didDislikeImagesId.insert(id)
+        DidLikeHit.deleteAnObject(id: id)
     }
 }
