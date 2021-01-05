@@ -22,7 +22,7 @@ class UserCollectionViewController: UIViewController{
     
     private let userViewModel = UserViewModel()
     private let bag = DisposeBag()
-    var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
+    private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
     private var isSubcribe = true
     
     override func viewDidLoad() {
