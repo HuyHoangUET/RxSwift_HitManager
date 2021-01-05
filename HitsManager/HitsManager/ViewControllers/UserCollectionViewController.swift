@@ -38,11 +38,17 @@ class UserCollectionViewController: UIViewController{
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(false)
         if userViewModel.isDatabaseChange {
-            self.imageCollectionView.dataSource = nil
             userViewModel.updateDidLikeHits()
+            userViewModel.isDatabaseChange = false
         }
         customNumberOfImageLabel()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(false)
+        imageCollectionView.dataSource = nil
     }
 }
 

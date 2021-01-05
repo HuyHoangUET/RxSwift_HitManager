@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 class UserTableViewController: UIViewController {
     
@@ -26,11 +27,23 @@ class UserTableViewController: UIViewController {
         hitTableView.register(UINib.init(nibName: "TableViewCell", bundle: nil),
                               forCellReuseIdentifier: "cell")
         scrollToRow()
+        
         initUserTableViewCell()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
+        super.viewWillAppear(false)
+        guard userViewModel != nil else {
+            return
+        }
+        if userViewModel!.isDatabaseChange {
+            let userCollectionView = UserCollectionViewController()
+            if userCollectionView.imageCollectionView != nil {
+                userCollectionView.imageCollectionView.dataSource = nil
+            }
+            userViewModel!.updateDidLikeHits()
+            userViewModel!.isDatabaseChange = false
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,6 +54,7 @@ class UserTableViewController: UIViewController {
         for id in userViewModel!.didDislikeImagesId {
             DidLikeHit.deleteAnObject(id: id)
         }
+        hitTableView.dataSource = nil
     }
     
     // Create cell
@@ -48,21 +62,24 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
-        userViewModel!.didLikeHitsRelay
-            .bind(to: hitTableView.rx.items(cellIdentifier: "cell", cellType: HitTableViewCell.self)) { indexPath,hit,cell in
-                cell.hit = hit
-                cell.setHeightOfHitImageView(imageWidth: CGFloat(hit.imageWidth),
-                                             imageHeight: CGFloat(hit.imageHeight))
-                cell.delegate = self
-                cell.handleLikeButton(hit: hit, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
-                
-                // user imageview
-                cell.setImageForUserView()
-                
-                // hit imageview
-                cell.setImageForHitImageView()
-            }
-            .disposed(by: bag)
+        // dataSourse
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionOfHit>(
+          configureCell: { dataSource, tableView, indexPath, item in
+            let cell = self.hitTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! HitTableViewCell
+            cell.hit = item
+            cell.setHeightOfHitImageView(imageWidth: CGFloat(item.imageWidth),
+                                                         imageHeight: CGFloat(item.imageHeight))
+            cell.handleLikeButton(hit: item, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
+            cell.configureCell()
+            return cell
+        })
+        userViewModel!.didLikeHitsRelay.subscribe(onNext: { hits in
+            let sections = [SectionOfHit(items: hits)]
+            Observable.just(sections)
+                .bind(to: self.hitTableView.rx.items(dataSource: dataSource))
+                .disposed(by: self.bag)
+        })
+        .disposed(by: bag)
     }
 }
 

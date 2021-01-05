@@ -66,6 +66,11 @@ class HitTableViewCell: UITableViewCell {
         Nuke.loadImage(with: request, options: options, into: userImageView)
     }
     
+    func configureCell(){
+        setImageForHitImageView()
+        setImageForUserView()
+    }
+    
     func handleLikeButton(hit: Hit, didDislikeImagesId: Set<Int>) {
         if didDislikeImagesId.isSuperset(of: [hit.id]){
             likeButton.setImage(UIImage(systemName: "heart", withConfiguration: scale), for: .normal)
