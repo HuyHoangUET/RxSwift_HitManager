@@ -40,12 +40,7 @@ class UserTableViewController: UIViewController {
         if userViewModel!.isDatabaseChange {
             isSubcribe = true
             hitTableView.dataSource = nil
-            let userCollectionView = UserCollectionViewController()
-            if userCollectionView.imageCollectionView != nil {
-                userCollectionView.imageCollectionView.dataSource = nil
-            }
             userViewModel!.updateDidLikeHits()
-            userViewModel!.isDatabaseChange = false
         }
     }
     
@@ -73,6 +68,7 @@ class UserTableViewController: UIViewController {
             cell.setHeightOfHitImageView(imageWidth: CGFloat(item.imageWidth),
                                                          imageHeight: CGFloat(item.imageHeight))
             cell.handleLikeButton(hit: item, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
+            cell.delegate = self
             cell.configureCell()
             return cell
         })
@@ -113,5 +109,6 @@ extension UserTableViewController: UserTableViewCellDelegate {
     
     func didDisLikeImage(id: Int) {
         userViewModel?.didDislikeImagesId.insert(id)
+        DidLikeHit.deleteAnObject(id: id)
     }
 }

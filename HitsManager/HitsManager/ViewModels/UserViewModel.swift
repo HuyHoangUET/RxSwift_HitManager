@@ -55,20 +55,4 @@ class UserViewModel {
             return
         }
     }
-    
-    func updateCollectionView() {
-        didLikeHitsRelay
-            .subscribe(onNext: { hits in
-                self.collectionViewItem.accept(hits)
-            })
-            .disposed(by: bag)
-    }
-    
-    func updateTableView() {
-        didLikeHitsRelay
-            .subscribe(onNext: { hits in
-                self.tableViewItem.accept(hits)
-            })
-            .disposed(by: bag)
-    }
 }

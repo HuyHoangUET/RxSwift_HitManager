@@ -40,7 +40,6 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        isSubcribe = true
         if userViewModel.isDatabaseChange {
             isSubcribe = true
             self.imageCollectionView.dataSource = nil
@@ -65,6 +64,7 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
           configureCell: { dataSource, collectionView, indexPath, item in
             let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HitCollectionViewCell
             cell.hit = item
+            cell.likeButton.isHidden = true
             cell.configureCell()
             return cell
         })
