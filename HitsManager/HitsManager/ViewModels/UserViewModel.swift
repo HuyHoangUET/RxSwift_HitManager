@@ -22,7 +22,7 @@ class UserViewModel {
     var didDislikeImagesId: Set<Int> = []
     private let bag = DisposeBag()
     var isDatabaseChange = false
-    private var databaseChangesSubject = PublishSubject<Bool>()
+    private var databaseChangesSubject = BehaviorSubject<Bool>(value: false)
     var databaseChanges: Observable<Bool> {
         return databaseChangesSubject.asObserver()
     }
@@ -46,6 +46,8 @@ class UserViewModel {
                     }
                     if changes != nil {
                         self.isDatabaseChange = true
+//                        self.databaseChangesSubject.onNext(true)
+//                        self.databaseChangesSubject.onCompleted()
                     }
                 })
                 .disposed(by: bag)

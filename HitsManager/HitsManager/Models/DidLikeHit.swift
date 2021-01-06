@@ -23,19 +23,12 @@ class DidLikeHit: Object {
         return "id"
     }
     
-    static func addAnObject(id: Int, url: String, imageWidth: Float, imageHeight: Float, userImageUrl: String, username: String) {
+    static func addAnObject(hit: DidLikeHit) {
         do {
             let realm = try Realm()
-            let didLikeImage = DidLikeHit()
-            didLikeImage.id = id
-            didLikeImage.url = url
-            didLikeImage.imageWidth = imageWidth
-            didLikeImage.imageHeight = imageHeight
-            didLikeImage.userImageUrl = userImageUrl
-            didLikeImage.username = username
-            try realm.write {
-                realm.add(didLikeImage)
-            }
+            Observable.from(object: hit)
+                .subscribe(realm.rx.add())
+                .disposed(by: DisposeBag())
         } catch let error {
             print("Add new object fail: \(error)")
         }
@@ -44,10 +37,9 @@ class DidLikeHit: Object {
     static func deleteAnObject(id: Int) {
         do {
             let realm = try Realm()
-            guard let didLikeImage = realm.object(ofType: self, forPrimaryKey: id) else { return }
-            
+            guard let hit = realm.object(ofType: self, forPrimaryKey: id) else { return }
             try realm.write {
-                realm.delete(didLikeImage)
+                realm.delete(hit)
             }
         } catch let error {
             print("Delete object fail: \(error)")
@@ -70,18 +62,14 @@ class DidLikeHit: Object {
         }
     }
     
-    static func getListDidLikeHit() -> Observable<[DidLikeHit]> {
-        return Observable.create { observer in
-            do {
-                let realm = try Realm()
-                let results = realm.objects(self)
-                let didLikeHits = Array(results)
-                observer.onNext(didLikeHits)
-                observer.onCompleted()
-            } catch {
-                return Disposables.create()
-            }
-            return Disposables.create()
-        }
+    static func convertHitToDidLikeHit(hit: Hit) -> DidLikeHit {
+        let didLikeHit = DidLikeHit()
+        didLikeHit.id = hit.id
+        didLikeHit.url = hit.imageURL
+        didLikeHit.imageHeight = Float(hit.imageHeight)
+        didLikeHit.imageWidth = Float(hit.imageWidth)
+        didLikeHit.userImageUrl = hit.userImageUrl
+        didLikeHit.username = hit.username
+        return didLikeHit
     }
 }

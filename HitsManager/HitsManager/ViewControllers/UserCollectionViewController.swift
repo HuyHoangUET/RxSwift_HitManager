@@ -48,6 +48,13 @@ class UserCollectionViewController: UIViewController{
             userViewModel.updateDidLikeHits()
             userViewModel.isDatabaseChange = false
         }
+        
+//        userViewModel.databaseChanges.subscribe(onNext: { done in
+//            self.isSubcribe = true
+//            self.imageCollectionView.dataSource = nil
+//            self.userViewModel.updateDidLikeHits()
+//        })
+//        .disposed(by: bag)
         customNumberOfImageLabel()
     }
     

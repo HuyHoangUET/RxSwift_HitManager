@@ -108,12 +108,8 @@ extension HitCollectionViewController: HitCollectionViewDelegate {
     func didLikeImage(hit: Hit) {
         let setDidLikeHitId = Set(DidLikeHit.getListId())
         if !setDidLikeHitId.isSuperset(of: [hit.id]) {
-            DidLikeHit.addAnObject(id: hit.id,
-                                   url: hit.imageURL,
-                                   imageWidth: Float(hit.imageWidth),
-                                   imageHeight: Float(hit.imageHeight),
-                                   userImageUrl: hit.userImageUrl,
-                                   username: hit.username)
+            let didLikeHit = DidLikeHit.convertHitToDidLikeHit(hit: hit)
+            DidLikeHit.addAnObject(hit: didLikeHit)
         }
     }
     
