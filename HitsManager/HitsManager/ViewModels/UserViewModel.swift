@@ -19,12 +19,9 @@ class UserViewModel {
         return chosenIndexPathSubject.asObserver()
     }
     var didLikeHitsRelay = BehaviorRelay<[Hit]>(value: [])
-    var didDisLikeImagesIdRelay = BehaviorRelay<[Int]>(value: [])
     var didDislikeImagesId: Set<Int> = []
     private let bag = DisposeBag()
     var isDatabaseChange = false
-    var collectionViewItem = BehaviorRelay<[Hit]>(value: [])
-    var tableViewItem = BehaviorRelay<[Hit]>(value: [])
     
     func updateDidLikeHits() {
         do {
