@@ -22,6 +22,10 @@ class UserViewModel {
     var didDislikeImagesId: Set<Int> = []
     private let bag = DisposeBag()
     var isDatabaseChange = false
+    private var databaseChangesSubject = PublishSubject<Bool>()
+    var databaseChanges: Observable<Bool> {
+        return databaseChangesSubject.asObserver()
+    }
     
     func updateDidLikeHits() {
         do {
