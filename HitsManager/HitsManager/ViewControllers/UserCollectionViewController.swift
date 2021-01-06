@@ -10,6 +10,8 @@ import UIKit
 import RxSwift
 import RxCocoa
 import RxDataSources
+import RxRealm
+import RealmSwift
 
 class UserCollectionViewController: UIViewController{
     
@@ -42,12 +44,22 @@ class UserCollectionViewController: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
         // update data for collectionView
-        if userViewModel.isDatabaseChange {
-            isSubcribe = true
-            self.imageCollectionView.dataSource = nil
-            userViewModel.updateDidLikeHits()
-            userViewModel.isDatabaseChange = false
-        }
+//        if userViewModel.isDatabaseChange {
+//            isSubcribe = true
+//            self.imageCollectionView.dataSource = nil
+//            userViewModel.updateDidLikeHits()
+//            userViewModel.isDatabaseChange = false
+//        }
+        
+        let realm = try! Realm()
+        let hits = realm.objects(DidLikeHit.self)
+        Observable.changeset(from: hits)
+            .subscribe(onNext: { changes in
+                self.isSubcribe = true
+                self.imageCollectionView.dataSource = nil
+                self.userViewModel.updateDidLikeHits()
+            })
+            .disposed(by: bag)
         customNumberOfImageLabel()
     }
     
