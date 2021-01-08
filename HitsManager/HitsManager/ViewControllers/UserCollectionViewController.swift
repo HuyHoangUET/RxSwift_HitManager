@@ -24,7 +24,6 @@ class UserCollectionViewController: UIViewController{
     @IBOutlet weak var imageCollectionView: UICollectionView!
     
     private let userViewModel = UserViewModel()
-    private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
     
     override func viewDidLoad() {
         super.viewDidLoad()
