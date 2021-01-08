@@ -38,7 +38,8 @@ class DidLikeHit: Object {
     static func deleteAnObject(id: Int) {
         do {
             let realm = try Realm()
-            guard let didLikeImage = realm.object(ofType: self, forPrimaryKey: id) else { return }
+            guard let didLikeImage = realm.object(ofType: self,
+                                                  forPrimaryKey: id) else { return }
             
             try realm.write {
                 realm.delete(didLikeImage)

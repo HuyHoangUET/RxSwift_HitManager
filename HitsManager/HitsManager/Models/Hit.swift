@@ -25,7 +25,11 @@ struct Hit: Decodable, Hashable {
         case username = "user"
     }
     
-    init(id: Int, imageUrl: String, imageWidth: CGFloat, imageHeight: CGFloat, userImageUrl: String, username: String) {
+    init(id: Int, imageUrl: String,
+         imageWidth: CGFloat,
+         imageHeight: CGFloat,
+         userImageUrl: String,
+         username: String) {
         self.id = id
         self.imageURL = imageUrl
         self.imageWidth = imageWidth
