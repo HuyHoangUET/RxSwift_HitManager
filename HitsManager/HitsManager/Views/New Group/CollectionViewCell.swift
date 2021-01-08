@@ -28,7 +28,8 @@ class HitCollectionViewCell: UICollectionViewCell {
         let options = ImageLoadingOptions(
             placeholder: UIImage(named: "placeholder")
             )
-        Nuke.loadImage(with: URL(string: hit.imageURL)!, options: options, into: imageView)
+        Nuke.loadImage(with: URL(string: hit.imageURL)!,
+                       options: options, into: imageView)
     }
     
     func handleLikeButton(hitId: Int) {

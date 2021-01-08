@@ -48,7 +48,8 @@ class HitTableViewCell: UITableViewCell {
             placeholder: UIImage(named: "placeholder")
             )
         guard hit.imageURL != "" else { return }
-        Nuke.loadImage(with: URL(string: hit.imageURL)!, options: options, into: hitImageView)
+        Nuke.loadImage(with: URL(string: hit.imageURL)!,
+                       options: options, into: hitImageView)
     }
     
     func setImageForUserView() {
@@ -73,9 +74,11 @@ class HitTableViewCell: UITableViewCell {
     
     func handleLikeButton(hit: Hit, didDisLikeHitsId: Set<Int>) {
         if didDisLikeHitsId.isSuperset(of: [hit.id]){
-            likeButton.setImage(UIImage(systemName: "heart", withConfiguration: scale), for: .normal)
+            likeButton.setImage(UIImage(systemName: "heart",
+                                        withConfiguration: scale), for: .normal)
         } else {
-            likeButton.setImage(UIImage(systemName: "heart.fill", withConfiguration: scale), for: .normal)
+            likeButton.setImage(UIImage(systemName: "heart.fill",
+                                        withConfiguration: scale), for: .normal)
         }
     }
     // MARK: - action
@@ -86,7 +89,8 @@ class HitTableViewCell: UITableViewCell {
             likeButton.tintColor = .red
             delegate?.didDisLikeImage(id: hit.id)
         } else {
-            likeButton.setImage(UIImage(systemName: "heart.fill", withConfiguration: scale), for: .normal)
+            likeButton.setImage(UIImage(systemName: "heart.fill",
+                                        withConfiguration: scale), for: .normal)
             likeButton.tintColor = .red
             delegate?.didLikeImage(id: hit.id)
         }
