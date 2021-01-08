@@ -64,21 +64,6 @@ class DidLikeHit: Object {
         }
     }
     
-    static func getListDidLikeHit() -> Observable<[DidLikeHit]> {
-        return Observable.create { observer in
-            do {
-                let realm = try Realm()
-                let results = realm.objects(self)
-                let didLikeHits = Array(results)
-                observer.onNext(didLikeHits)
-                observer.onCompleted()
-            } catch {
-                return Disposables.create()
-            }
-            return Disposables.create()
-        }
-    }
-    
     static func convertToDidLikeHit(hit: Hit) -> DidLikeHit {
         let didLikeHit = DidLikeHit()
         didLikeHit.id = hit.id
