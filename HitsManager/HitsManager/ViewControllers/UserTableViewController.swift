@@ -19,7 +19,6 @@ class UserTableViewController: UIViewController {
     @IBOutlet weak var hitTableView: UITableView!
     
     var userViewModel: UserViewModel?
-    private let bag = DisposeBag()
     private var isSubcribe = true
     
     override func viewDidLoad() {
@@ -41,8 +40,9 @@ class UserTableViewController: UIViewController {
             return
         }
         // delete disLiked image
-        for id in userViewModel!.didDislikeImagesId {
+        for id in userViewModel!.didDislikeHitsId {
             DidLikeHit.deleteAnObject(id: id)
+            userViewModel?.didDislikeHitsId.removeAll()
         }
         isSubcribe = false
     }
@@ -57,11 +57,11 @@ class UserTableViewController: UIViewController {
         let hits = realm.objects(DidLikeHit.self)
         Observable.collection(from: hits )
             .bind(to: hitTableView.rx.items(cellIdentifier: "cell", cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
-                let hit = Hit(id: didLikeHit.id, imageUrl: didLikeHit.url, imageWidth: CGFloat(didLikeHit.imageWidth), imageHeight: CGFloat(didLikeHit.imageHeight), userImageUrl: didLikeHit.userImageUrl, username: didLikeHit.username)
-                cell.hit = hit
+                let item = Hit(id: didLikeHit.id, imageUrl: didLikeHit.url, imageWidth: CGFloat(didLikeHit.imageWidth), imageHeight: CGFloat(didLikeHit.imageHeight), userImageUrl: didLikeHit.userImageUrl, username: didLikeHit.username)
+                cell.hit = item
                 cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
-                                                           imageHeight: CGFloat(hit.imageHeight))
-                cell.handleLikeButton(hit: hit, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
+                                                           imageHeight: CGFloat(item.imageHeight))
+                cell.handleLikeButton(hit: item, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
                 cell.delegate = self
                 cell.configureCell()
             }
@@ -80,7 +80,7 @@ extension UserTableViewController {
                     .subscribe(onNext: { indexPath in
                         self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
                     })
-                    .disposed(by: DisposeBag())
+                    .disposed(by: bag)
             }
         }
     }
@@ -88,11 +88,9 @@ extension UserTableViewController {
 
 extension UserTableViewController: UserTableViewCellDelegate {
     func didLikeImage(id: Int) {
-        userViewModel?.didDislikeImagesId.remove(id)
+        userViewModel?.didDislikeHitsId.remove(id)
     }
     
     func didDisLikeImage(id: Int) {
-        userViewModel?.didDislikeImagesId.insert(id)
-        DidLikeHit.deleteAnObject(id: id)
-    }
+        userViewModel?.didDislikeHitsId.insert(id)    }
 }

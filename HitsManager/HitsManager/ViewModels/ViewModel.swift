@@ -15,7 +15,6 @@ class ViewModel {
     weak var delegate: HitCollectionViewDelegate?
     var sellectedCell = IndexPath()
     private var curentPage = 1
-    private let bag = DisposeBag()
     var hitsRelay = BehaviorRelay<[Hit]>(value: [])
     
     func getHitsByPage() {
@@ -30,7 +29,7 @@ class ViewModel {
                 print("get hits failed: \(error.localizedDescription)")
             }
         })
-        .disposed(by: self.bag)
+        .disposed(by: bag)
     }
     
     func getHitsInNextPage(indexPaths: [IndexPath]) {

@@ -71,8 +71,8 @@ class HitTableViewCell: UITableViewCell {
         setImageForUserView()
     }
     
-    func handleLikeButton(hit: Hit, didDislikeImagesId: Set<Int>) {
-        if didDislikeImagesId.isSuperset(of: [hit.id]){
+    func handleLikeButton(hit: Hit, didDisLikeHitsId: Set<Int>) {
+        if didDisLikeHitsId.isSuperset(of: [hit.id]){
             likeButton.setImage(UIImage(systemName: "heart", withConfiguration: scale), for: .normal)
         } else {
             likeButton.setImage(UIImage(systemName: "heart.fill", withConfiguration: scale), for: .normal)

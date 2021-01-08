@@ -13,6 +13,7 @@ import RxDataSources
 import RxRealm
 import RealmSwift
 
+let bag = DisposeBag()
 class UserCollectionViewController: UIViewController{
     
     // MARK: - outlet
@@ -23,7 +24,6 @@ class UserCollectionViewController: UIViewController{
     @IBOutlet weak var imageCollectionView: UICollectionView!
     
     private let userViewModel = UserViewModel()
-    private let bag = DisposeBag()
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
     
     override func viewDidLoad() {
@@ -35,13 +35,13 @@ class UserCollectionViewController: UIViewController{
         customUserImage()
         customUsernameLabel()
         // display tableviewcell
-        userViewModel.updateDidLikeHits()
         initUserCollectionViewCell()
         handleSellectCell()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+        userViewModel.getDidLikeHitsid()
         customNumberOfImageLabel()
     }
     
@@ -114,7 +114,7 @@ extension UserCollectionViewController {
     }
     
     func customNumberOfImageLabel() {
-        numberOfImagesLabel.text = "\(userViewModel.didLikeHitsRelay.value.count) ảnh đã thích"
+        numberOfImagesLabel.text = "\(userViewModel.didLikeHitsId.count) ảnh đã thích"
     }
 }
 
