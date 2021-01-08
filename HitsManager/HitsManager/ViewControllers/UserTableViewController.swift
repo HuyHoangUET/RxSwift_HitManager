@@ -10,6 +10,8 @@ import UIKit
 import RxSwift
 import RxCocoa
 import RxDataSources
+import RxRealm
+import RealmSwift
 
 class UserTableViewController: UIViewController {
     
@@ -33,19 +35,6 @@ class UserTableViewController: UIViewController {
         initUserTableViewCell()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(false)
-        guard userViewModel != nil else {
-            return
-        }
-        // update data
-        if userViewModel!.isDatabaseChange {
-            isSubcribe = true
-            hitTableView.dataSource = nil
-            userViewModel!.updateDidLikeHits()
-        }
-    }
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(false)
         guard userViewModel != nil else {
@@ -63,29 +52,19 @@ class UserTableViewController: UIViewController {
         guard userViewModel != nil else {
             return
         }
-        // dataSourse
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionOfHit>(
-          configureCell: { dataSource, tableView, indexPath, item in
-            let cell = self.hitTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! HitTableViewCell
-            cell.hit = item
-            cell.setHeightOfHitImageView(imageWidth: CGFloat(item.imageWidth),
-                                                         imageHeight: CGFloat(item.imageHeight))
-            cell.handleLikeButton(hit: item, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
-            cell.delegate = self
-            cell.configureCell()
-            return cell
-        })
-        // bind to tableView
-        userViewModel!.didLikeHitsRelay
-            .takeWhile { hits in
-                self.isSubcribe == true
+        
+        let realm = try! Realm()
+        let hits = realm.objects(DidLikeHit.self)
+        Observable.collection(from: hits )
+            .bind(to: hitTableView.rx.items(cellIdentifier: "cell", cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
+                let hit = Hit(id: didLikeHit.id, imageUrl: didLikeHit.url, imageWidth: CGFloat(didLikeHit.imageWidth), imageHeight: CGFloat(didLikeHit.imageHeight), userImageUrl: didLikeHit.userImageUrl, username: didLikeHit.username)
+                cell.hit = hit
+                cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
+                                                           imageHeight: CGFloat(hit.imageHeight))
+                cell.handleLikeButton(hit: hit, didDislikeImagesId: self.userViewModel!.didDislikeImagesId)
+                cell.delegate = self
+                cell.configureCell()
             }
-            .subscribe(onNext: { hits in
-                let sections = [SectionOfHit(items: hits)]
-                Observable.just(sections)
-                    .bind(to: self.hitTableView.rx.items(dataSource: dataSource))
-                    .disposed(by: self.bag)
-            })
             .disposed(by: bag)
     }
 }

@@ -23,19 +23,13 @@ class DidLikeHit: Object {
         return "id"
     }
     
-    static func addAnObject(id: Int, url: String, imageWidth: Float, imageHeight: Float, userImageUrl: String, username: String) {
+    static func addAnObject(hit: Hit) {
         do {
             let realm = try Realm()
-            let didLikeImage = DidLikeHit()
-            didLikeImage.id = id
-            didLikeImage.url = url
-            didLikeImage.imageWidth = imageWidth
-            didLikeImage.imageHeight = imageHeight
-            didLikeImage.userImageUrl = userImageUrl
-            didLikeImage.username = username
-            try realm.write {
-                realm.add(didLikeImage)
-            }
+            let didLikeImage = convertToDidLikeHit(hit: hit)
+            Observable.from(object: didLikeImage)
+                .subscribe(realm.rx.add())
+                .disposed(by: DisposeBag())
         } catch let error {
             print("Add new object fail: \(error)")
         }
@@ -83,5 +77,16 @@ class DidLikeHit: Object {
             }
             return Disposables.create()
         }
+    }
+    
+    static func convertToDidLikeHit(hit: Hit) -> DidLikeHit {
+        let didLikeHit = DidLikeHit()
+        didLikeHit.id = hit.id
+        didLikeHit.url = hit.imageURL
+        didLikeHit.imageWidth = Float(hit.imageWidth)
+        didLikeHit.imageHeight = Float(hit.imageHeight)
+        didLikeHit.userImageUrl = hit.userImageUrl
+        didLikeHit.username = hit.username
+        return didLikeHit
     }
 }

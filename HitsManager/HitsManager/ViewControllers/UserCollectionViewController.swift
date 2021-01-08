@@ -25,7 +25,6 @@ class UserCollectionViewController: UIViewController{
     private let userViewModel = UserViewModel()
     private let bag = DisposeBag()
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionOfHit>!
-    private var isSubcribe = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,29 +42,11 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        // update data for collectionView
-//        if userViewModel.isDatabaseChange {
-//            isSubcribe = true
-//            self.imageCollectionView.dataSource = nil
-//            userViewModel.updateDidLikeHits()
-//            userViewModel.isDatabaseChange = false
-//        }
-        
-        let realm = try! Realm()
-        let hits = realm.objects(DidLikeHit.self)
-        Observable.changeset(from: hits)
-            .subscribe(onNext: { changes in
-                self.isSubcribe = true
-                self.imageCollectionView.dataSource = nil
-                self.userViewModel.updateDidLikeHits()
-            })
-            .disposed(by: bag)
         customNumberOfImageLabel()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(false)
-        isSubcribe = false
     }
 }
 
@@ -73,26 +54,15 @@ class UserCollectionViewController: UIViewController{
 extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
-        // dataSourse
-        dataSource = RxCollectionViewSectionedReloadDataSource<SectionOfHit>(
-          configureCell: { dataSource, collectionView, indexPath, item in
-            let cell = self.imageCollectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HitCollectionViewCell
-            cell.hit = item
-            cell.likeButton.isHidden = true
-            cell.configureCell()
-            return cell
-        })
-        // bind to collectionVew
-        userViewModel.didLikeHitsRelay
-            .takeWhile { hits in
-                self.isSubcribe == true
+        let realm = try! Realm()
+        let hits = realm.objects(DidLikeHit.self)
+        Observable.collection(from: hits )
+            .bind(to: imageCollectionView.rx.items(cellIdentifier: "cell", cellType: HitCollectionViewCell.self)) {indexPath, didLikeHit, cell in
+                let hit = Hit(id: didLikeHit.id, imageUrl: didLikeHit.url, imageWidth: CGFloat(didLikeHit.imageWidth), imageHeight: CGFloat(didLikeHit.imageHeight), userImageUrl: didLikeHit.userImageUrl, username: didLikeHit.username)
+                cell.hit = hit
+                cell.likeButton.isHidden = true
+                cell.configureCell()
             }
-            .subscribe(onNext: { hits in
-                let sections = [SectionOfHit(items: hits)]
-                Observable.just(sections)
-                    .bind(to: self.imageCollectionView.rx.items(dataSource: self.dataSource))
-                    .disposed(by: self.bag)
-            })
             .disposed(by: bag)
     }
 
