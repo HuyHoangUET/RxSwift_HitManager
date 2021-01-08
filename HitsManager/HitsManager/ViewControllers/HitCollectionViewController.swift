@@ -74,7 +74,7 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         if viewModel.sellectedCell == indexPath {
             let cell = collectionView.cellForItem(at: indexPath) as! HitCollectionViewCell
-            return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.imageView.frame.width, imageHeight: cell.imageView.frame.height)
+            return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.hit.imageWidth, imageHeight: cell.hit.imageHeight)
         }
         
         return SizeOfCollectionViewItem.getSizeForItem()
