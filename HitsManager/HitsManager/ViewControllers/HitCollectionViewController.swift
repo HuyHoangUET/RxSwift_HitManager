@@ -23,7 +23,8 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
         super.viewDidLoad()
         collectionView.delegate = self
         collectionView.prefetchDataSource = self
-        collectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        collectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil),
+                                forCellWithReuseIdentifier: "cell")
         viewModel.getHitsByPage()
         initHitCollectionViewCell()
         handleSellectedCell()
@@ -37,7 +38,8 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
     // Create cell
     func initHitCollectionViewCell() {
         viewModel.hitsRelay
-            .bind(to: collectionView.rx.items(cellIdentifier: "cell", cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
+            .bind(to: collectionView.rx.items(cellIdentifier: "cell",
+                                              cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.delegate = self
                 let hitId = hit.id
                 cell.handleLikeButton(hitId: hitId)
@@ -74,7 +76,8 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         if viewModel.sellectedCell == indexPath {
             let cell = collectionView.cellForItem(at: indexPath) as! HitCollectionViewCell
-            return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.hit.imageWidth, imageHeight: cell.hit.imageHeight)
+            return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.hit.imageWidth,
+                                                                     imageHeight: cell.hit.imageHeight)
         }
         
         return SizeOfCollectionViewItem.getSizeForItem()

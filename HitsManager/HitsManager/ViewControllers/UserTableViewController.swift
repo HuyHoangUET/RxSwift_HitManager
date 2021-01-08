@@ -56,12 +56,18 @@ class UserTableViewController: UIViewController {
         let realm = try! Realm()
         let hits = realm.objects(DidLikeHit.self)
         Observable.collection(from: hits )
-            .bind(to: hitTableView.rx.items(cellIdentifier: "cell", cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
-                let item = Hit(id: didLikeHit.id, imageUrl: didLikeHit.url, imageWidth: CGFloat(didLikeHit.imageWidth), imageHeight: CGFloat(didLikeHit.imageHeight), userImageUrl: didLikeHit.userImageUrl, username: didLikeHit.username)
-                cell.hit = item
+            .bind(to: hitTableView.rx.items(cellIdentifier: "cell",
+                                            cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
+                let hit = Hit(id: didLikeHit.id,
+                               imageUrl: didLikeHit.url,
+                               imageWidth: CGFloat(didLikeHit.imageWidth),
+                               imageHeight: CGFloat(didLikeHit.imageHeight),
+                               userImageUrl: didLikeHit.userImageUrl,
+                               username: didLikeHit.username)
+                cell.hit = hit
                 cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
-                                                           imageHeight: CGFloat(item.imageHeight))
-                cell.handleLikeButton(hit: item, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
+                                                           imageHeight: CGFloat(hit.imageHeight))
+                cell.handleLikeButton(hit: hit, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
                 cell.delegate = self
                 cell.configureCell()
             }
