@@ -25,8 +25,8 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
         collectionView.prefetchDataSource = self
         collectionView.register(UINib.init(nibName: "CollectionViewCell", bundle: nil),
                                 forCellWithReuseIdentifier: "cell")
-        viewModel.getHitsByPage()
         initHitCollectionViewCell()
+        viewModel.getHitsInNextPage()
         handleSellectedCell()
     }
     
@@ -37,12 +37,14 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
     
     // Create cell
     func initHitCollectionViewCell() {
-        viewModel.hitsRelay
-            .bind(to: collectionView.rx.items(cellIdentifier: "cell",
+        self.viewModel.hitsRelay
+            .bind(to: self.collectionView.rx.items(cellIdentifier: "cell",
                                               cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.delegate = self
-                let hitId = hit.id
-                cell.handleLikeButton(hitId: hitId)
+                DidLikeHit.getAllResultId().subscribe(onNext: { didLikeHitsId in
+                    cell.handleLikeButton(didLikeHitsId: didLikeHitsId, hit: hit)
+                })
+                .disposed(by: bag)
                 cell.hit = hit
                 cell.configureCell()
             }
@@ -100,7 +102,9 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
 extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView,
                         prefetchItemsAt indexPaths: [IndexPath]) {
-        viewModel.getHitsInNextPage(indexPaths: indexPaths)
+        if indexPaths.last?.row == viewModel.hitsRelay.value.count - 1 {
+            viewModel.curentPageRelay.accept(1)
+        }
     }
 }
 
@@ -108,10 +112,12 @@ extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
 extension HitCollectionViewController: HitCollectionViewDelegate {
     
     func didLikeImage(hit: Hit) {
-        let setDidLikeHitId = Set(DidLikeHit.getListId())
-        if !setDidLikeHitId.isSuperset(of: [hit.id]) {
-            DidLikeHit.addAnObject(hit: hit)
-        }
+        DidLikeHit.getAllResultId().subscribe(onNext: { hitsId in
+            if !Set(hitsId).isSuperset(of: [hit.id]) {
+                DidLikeHit.addAnObject(hit: hit)
+            }
+        })
+        .disposed(by: bag)
     }
     
     func didDisLikeImage(id: Int) {

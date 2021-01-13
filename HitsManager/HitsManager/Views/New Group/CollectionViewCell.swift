@@ -32,13 +32,12 @@ class HitCollectionViewCell: UICollectionViewCell {
                        options: options, into: imageView)
     }
     
-    func handleLikeButton(hitId: Int) {
-        let listDidLikeImageId = DidLikeHit.getListId()
-        if listDidLikeImageId.isSuperset(of: [hitId]) {
-            likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        } else {
-            likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        }
+    func handleLikeButton(didLikeHitsId: [Int], hit: Hit) {
+        if Set(didLikeHitsId).isSuperset(of: [hit.id]) {
+                self.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            } else {
+                self.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            }
     }
     
     // MARK: - action
