@@ -54,7 +54,8 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     func initUserCollectionViewCell() {
     DidLikeHit.getAllResult()
         .bind(to: self.imageCollectionView.rx.items(cellIdentifier: "cell",
-                                               cellType: HitCollectionViewCell.self)) {indexPath, didLikeHit, cell in
+                                               cellType: HitCollectionViewCell.self))
+        { indexPath, didLikeHit, cell in
             let hit = Hit(id: didLikeHit.id,
                           imageUrl: didLikeHit.url,
                           imageWidth: CGFloat(didLikeHit.imageWidth),

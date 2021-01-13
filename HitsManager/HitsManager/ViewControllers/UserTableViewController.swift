@@ -42,8 +42,8 @@ class UserTableViewController: UIViewController {
         // delete disLiked image
         for id in userViewModel!.didDislikeHitsId {
             DidLikeHit.deleteAnObject(id: id)
-            userViewModel?.didDislikeHitsId.removeAll()
         }
+        userViewModel?.didDislikeHitsId.removeAll()
         isSubcribe = false
     }
     
