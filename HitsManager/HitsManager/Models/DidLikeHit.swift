@@ -31,7 +31,7 @@ class DidLikeHit: Object {
                 .subscribe(realm.rx.add())
                 .disposed(by: DisposeBag())
         } catch let error {
-            print("Add new object fail: \(error)")
+            print("Add new object failed: \(error.localizedDescription)")
         }
     }
     
@@ -44,26 +44,32 @@ class DidLikeHit: Object {
                 realm.delete(didLikeImage)
             }
         } catch let error {
-            print("Delete object fail: \(error)")
+            print("Delete object failed: \(error.localizedDescription)")
         }
     }
     
-    static func getListId() -> Set<Int> {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(self)
-            let didLikeHits = Array(results)
-            var listDidLikeImageId: Set<Int> = []
-            for didLikeImage in didLikeHits {
-                let imageId = didLikeImage.id
-                listDidLikeImageId.insert(imageId)
+    static func getAllResult() -> Observable<Results<DidLikeHit>> {
+        let realm = try! Realm()
+        return Observable.collection(from: realm.objects(DidLikeHit.self))
+    }
+    
+    static func getAllResultId() -> Observable<[Int]> {
+        return Observable.create{ observer in
+            do {
+                let realm = try Realm()
+                var hitsId: [Int] = []
+                let hits = Array(realm.objects(DidLikeHit.self))
+                for hit in hits {
+                    hitsId.append(hit.id)
+                }
+                observer.onNext(hitsId)
+                observer.onCompleted()
+            } catch let error {
+                print("Get all id form DidLikeHit failed: \(error)")
             }
-            return listDidLikeImageId
-        } catch {
-            return []
+            return Disposables.create()
         }
     }
-    
     static func convertToDidLikeHit(hit: Hit) -> DidLikeHit {
         let didLikeHit = DidLikeHit()
         didLikeHit.id = hit.id

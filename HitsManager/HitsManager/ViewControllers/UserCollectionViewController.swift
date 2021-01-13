@@ -40,7 +40,6 @@ class UserCollectionViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
-        userViewModel.getDidLikeHitsid()
         customNumberOfImageLabel()
     }
     
@@ -53,22 +52,21 @@ class UserCollectionViewController: UIViewController{
 extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
-        let realm = try! Realm()
-        let hits = realm.objects(DidLikeHit.self)
-        Observable.collection(from: hits )
-            .bind(to: imageCollectionView.rx.items(cellIdentifier: "cell",
-                                                   cellType: HitCollectionViewCell.self)) {indexPath, didLikeHit, cell in
-                let hit = Hit(id: didLikeHit.id,
-                              imageUrl: didLikeHit.url,
-                              imageWidth: CGFloat(didLikeHit.imageWidth),
-                              imageHeight: CGFloat(didLikeHit.imageHeight),
-                              userImageUrl: didLikeHit.userImageUrl,
-                              username: didLikeHit.username)
-                cell.hit = hit
-                cell.likeButton.isHidden = true
-                cell.configureCell()
-            }
-            .disposed(by: bag)
+    DidLikeHit.getAllResult()
+        .bind(to: self.imageCollectionView.rx.items(cellIdentifier: "cell",
+                                               cellType: HitCollectionViewCell.self))
+        { indexPath, didLikeHit, cell in
+            let hit = Hit(id: didLikeHit.id,
+                          imageUrl: didLikeHit.url,
+                          imageWidth: CGFloat(didLikeHit.imageWidth),
+                          imageHeight: CGFloat(didLikeHit.imageHeight),
+                          userImageUrl: didLikeHit.userImageUrl,
+                          username: didLikeHit.username)
+            cell.hit = hit
+            cell.likeButton.isHidden = true
+            cell.configureCell()
+        }
+    .disposed(by: bag)
     }
 
     // Handle did sellect cell
@@ -119,7 +117,10 @@ extension UserCollectionViewController {
     }
     
     func customNumberOfImageLabel() {
-        numberOfImagesLabel.text = "\(userViewModel.didLikeHitsId.count) ảnh đã thích"
+        DidLikeHit.getAllResult().subscribe( onNext: { result in
+            self.numberOfImagesLabel.text = "\(result.count) ảnh đã thích"
+        })
+        .disposed(by: bag)
     }
 }
 

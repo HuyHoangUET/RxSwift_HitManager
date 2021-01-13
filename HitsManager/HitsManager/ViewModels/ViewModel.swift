@@ -14,7 +14,8 @@ import RxCocoa
 class ViewModel {
     weak var delegate: HitCollectionViewDelegate?
     var sellectedCell = IndexPath()
-    private var curentPage = 1
+    private var curentPage = 0
+    var curentPageRelay = BehaviorRelay<Int>(value: 1)
     var hitsRelay = BehaviorRelay<[Hit]>(value: [])
     
     func getHitsByPage() {
@@ -32,10 +33,12 @@ class ViewModel {
         .disposed(by: bag)
     }
     
-    func getHitsInNextPage(indexPaths: [IndexPath]) {
-        if indexPaths.last?.row == self.hitsRelay.value.count - 1 {
-            self.curentPage += 1
-            self.getHitsByPage()
-        }
+    func getHitsInNextPage() {
+        curentPageRelay
+            .subscribe(onNext: { page in
+                self.curentPage += 1
+                self.getHitsByPage()
+            })
+            .disposed(by: bag)
     }
 }

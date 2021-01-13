@@ -42,21 +42,15 @@ class UserTableViewController: UIViewController {
         // delete disLiked image
         for id in userViewModel!.didDislikeHitsId {
             DidLikeHit.deleteAnObject(id: id)
-            userViewModel?.didDislikeHitsId.removeAll()
         }
+        userViewModel?.didDislikeHitsId.removeAll()
         isSubcribe = false
     }
     
     // Create cell
     func initUserTableViewCell() {
-        guard userViewModel != nil else {
-            return
-        }
-        
-        let realm = try! Realm()
-        let hits = realm.objects(DidLikeHit.self)
-        Observable.collection(from: hits )
-            .bind(to: hitTableView.rx.items(cellIdentifier: "cell",
+        DidLikeHit.getAllResult()
+            .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
                                             cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
                 let hit = Hit(id: didLikeHit.id,
                                imageUrl: didLikeHit.url,
@@ -98,5 +92,6 @@ extension UserTableViewController: UserTableViewCellDelegate {
     }
     
     func didDisLikeImage(id: Int) {
-        userViewModel?.didDislikeHitsId.insert(id)    }
+        userViewModel?.didDislikeHitsId.insert(id)
+    }
 }

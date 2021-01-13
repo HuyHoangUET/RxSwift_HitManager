@@ -19,9 +19,4 @@ class UserViewModel {
         return chosenIndexPathSubject.asObserver()
     }
     var didDislikeHitsId: Set<Int> = []
-    var didLikeHitsId: Set<Int> = []
-    
-    func getDidLikeHitsid() {
-        didLikeHitsId = DidLikeHit.getListId()
-    }
 }
