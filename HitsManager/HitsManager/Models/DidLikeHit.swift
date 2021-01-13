@@ -31,7 +31,7 @@ class DidLikeHit: Object {
                 .subscribe(realm.rx.add())
                 .disposed(by: DisposeBag())
         } catch let error {
-            print("Add new object failed: \(error)")
+            print("Add new object failed: \(error.localizedDescription)")
         }
     }
     
@@ -44,21 +44,13 @@ class DidLikeHit: Object {
                 realm.delete(didLikeImage)
             }
         } catch let error {
-            print("Delete object failed: \(error)")
+            print("Delete object failed: \(error.localizedDescription)")
         }
     }
     
     static func getAllResult() -> Observable<Results<DidLikeHit>> {
-        return Observable.create{ observer in
-            do {
-                let realm = try Realm()
-                observer.onNext(realm.objects(DidLikeHit.self))
-                observer.onCompleted()
-            } catch let error {
-                print("Get all result form DidLikeHit failed: \(error)")
-            }
-            return Disposables.create()
-        }
+        let realm = try! Realm()
+        return Observable.collection(from: realm.objects(DidLikeHit.self))
     }
     
     static func getAllResultId() -> Observable<[Int]> {

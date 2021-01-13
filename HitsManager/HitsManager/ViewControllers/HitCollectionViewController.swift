@@ -10,6 +10,7 @@ import Nuke
 import RxSwift
 import RxCocoa
 import RxDataSources
+import RealmSwift
 
 class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
     // MARK: - outlet

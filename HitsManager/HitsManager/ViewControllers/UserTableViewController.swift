@@ -49,26 +49,23 @@ class UserTableViewController: UIViewController {
     
     // Create cell
     func initUserTableViewCell() {
-        DidLikeHit.getAllResult().subscribe(onNext: { hits in
-            Observable.collection(from: hits )
-                .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
-                                                cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
-                    let hit = Hit(id: didLikeHit.id,
-                                   imageUrl: didLikeHit.url,
-                                   imageWidth: CGFloat(didLikeHit.imageWidth),
-                                   imageHeight: CGFloat(didLikeHit.imageHeight),
-                                   userImageUrl: didLikeHit.userImageUrl,
-                                   username: didLikeHit.username)
-                    cell.hit = hit
-                    cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
-                                                               imageHeight: CGFloat(hit.imageHeight))
-                    cell.handleLikeButton(hit: hit, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
-                    cell.delegate = self
-                    cell.configureCell()
-                }
-                .disposed(by: bag)
-        })
-        .disposed(by: bag)
+        DidLikeHit.getAllResult()
+            .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
+                                            cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
+                let hit = Hit(id: didLikeHit.id,
+                               imageUrl: didLikeHit.url,
+                               imageWidth: CGFloat(didLikeHit.imageWidth),
+                               imageHeight: CGFloat(didLikeHit.imageHeight),
+                               userImageUrl: didLikeHit.userImageUrl,
+                               username: didLikeHit.username)
+                cell.hit = hit
+                cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
+                                                           imageHeight: CGFloat(hit.imageHeight))
+                cell.handleLikeButton(hit: hit, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
+                cell.delegate = self
+                cell.configureCell()
+            }
+            .disposed(by: bag)
     }
 }
 
@@ -95,5 +92,6 @@ extension UserTableViewController: UserTableViewCellDelegate {
     }
     
     func didDisLikeImage(id: Int) {
-        userViewModel?.didDislikeHitsId.insert(id)    }
+        userViewModel?.didDislikeHitsId.insert(id)
+    }
 }
