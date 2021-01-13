@@ -42,10 +42,11 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
             .bind(to: self.collectionView.rx.items(cellIdentifier: "cell",
                                               cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.delegate = self
-                DidLikeHit.getAllResultId().subscribe(onNext: { didLikeHitsId in
-                    cell.handleLikeButton(didLikeHitsId: didLikeHitsId, hit: hit)
-                })
-                .disposed(by: bag)
+//                DidLikeHit.getAllResultId().subscribe(onNext: { didLikeHitsId in
+//                    cell.handleLikeButton(didLikeHitsId: didLikeHitsId, hit: hit)
+//                })
+//                .disposed(by: bag)
+                cell.handleLikeButton(hit: hit)
                 cell.hit = hit
                 cell.configureCell()
             }

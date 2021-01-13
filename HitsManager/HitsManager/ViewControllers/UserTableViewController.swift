@@ -34,19 +34,6 @@ class UserTableViewController: UIViewController {
         initUserTableViewCell()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(false)
-        guard userViewModel != nil else {
-            return
-        }
-        // delete disLiked image
-        for id in userViewModel!.didDislikeHitsId {
-            DidLikeHit.deleteAnObject(id: id)
-        }
-        userViewModel?.didDislikeHitsId.removeAll()
-        isSubcribe = false
-    }
-    
     // Create cell
     func initUserTableViewCell() {
         DidLikeHit.getAllResult()
@@ -93,5 +80,6 @@ extension UserTableViewController: UserTableViewCellDelegate {
     
     func didDisLikeImage(id: Int) {
         userViewModel?.didDislikeHitsId.insert(id)
+        DidLikeHit.deleteAnObject(id: id)
     }
 }

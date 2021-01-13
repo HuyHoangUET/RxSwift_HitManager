@@ -40,6 +40,20 @@ class HitCollectionViewCell: UICollectionViewCell {
             }
     }
     
+    func handleLikeButton(hit: Hit) {
+        DidLikeHit.getAllResult().subscribe(onNext: { result in
+            let didLikeHits = Array(result)
+            for didLikeHit in didLikeHits {
+                if didLikeHit.id == hit.id {
+                    self.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                    return
+                }
+            }
+            self.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        })
+        .disposed(by: bag)
+    }
+    
     // MARK: - action
     @IBAction func likeButton(_ sender: UIButton) {
         let heartImage = UIImage(systemName: "heart.fill")
