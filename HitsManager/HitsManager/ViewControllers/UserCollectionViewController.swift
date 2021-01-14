@@ -14,7 +14,7 @@ import RxRealm
 import RealmSwift
 
 let bag = DisposeBag()
-class UserCollectionViewController: UIViewController{
+class UserCollectionViewController: UIViewController {
     
     // MARK: - outlet
     @IBOutlet weak var userView: UIView!
@@ -52,16 +52,11 @@ class UserCollectionViewController: UIViewController{
 extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
-    DidLikeHit.getAllResult()
+    DidLikeHit.asObservable()
         .bind(to: self.imageCollectionView.rx.items(cellIdentifier: "cell",
                                                cellType: HitCollectionViewCell.self))
         { indexPath, didLikeHit, cell in
-            let hit = Hit(id: didLikeHit.id,
-                          imageUrl: didLikeHit.url,
-                          imageWidth: CGFloat(didLikeHit.imageWidth),
-                          imageHeight: CGFloat(didLikeHit.imageHeight),
-                          userImageUrl: didLikeHit.userImageUrl,
-                          username: didLikeHit.username)
+            let hit = didLikeHit.asHit()
             cell.hit = hit
             cell.likeButton.isHidden = true
             cell.configureCell()
@@ -117,7 +112,7 @@ extension UserCollectionViewController {
     }
     
     func customNumberOfImageLabel() {
-        DidLikeHit.getAllResult().subscribe( onNext: { result in
+        DidLikeHit.asObservable().subscribe( onNext: { result in
             self.numberOfImagesLabel.text = "\(result.count) ảnh đã thích"
         })
         .disposed(by: bag)

@@ -19,7 +19,6 @@ class HitTableViewCell: UITableViewCell {
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var constraintHeightOfHitImageView: NSLayoutConstraint!
     
-    weak var delegate: UserTableViewCellDelegate?
     private let scale = UIImage.SymbolConfiguration(scale: .large)
     var hit = Hit()
     
@@ -83,16 +82,6 @@ class HitTableViewCell: UITableViewCell {
     }
     // MARK: - action
     @IBAction func likeButton(_ sender: Any) {
-        let heartImage = UIImage(systemName: "heart", withConfiguration: scale)
-        if likeButton.currentImage != heartImage {
-            likeButton.setImage(heartImage, for: .normal)
-            likeButton.tintColor = .red
-            delegate?.didDisLikeImage(id: hit.id)
-        } else {
-            likeButton.setImage(UIImage(systemName: "heart.fill",
-                                        withConfiguration: scale), for: .normal)
-            likeButton.tintColor = .red
-            delegate?.didLikeImage(id: hit.id)
-        }
+        DidLikeHit.deleteAnObject(id: hit.id)
     }
 }

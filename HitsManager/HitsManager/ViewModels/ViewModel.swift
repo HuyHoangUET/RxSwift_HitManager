@@ -12,7 +12,6 @@ import RxSwift
 import RxCocoa
 
 class ViewModel {
-    weak var delegate: HitCollectionViewDelegate?
     var sellectedCell = IndexPath()
     private var curentPage = 0
     var curentPageRelay = BehaviorRelay<Int>(value: 1)

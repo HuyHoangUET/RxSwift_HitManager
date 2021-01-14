@@ -46,4 +46,15 @@ struct Hit: Decodable, Hashable {
         userImageUrl = ""
         username = ""
     }
+    
+    func asDidLikeHit() -> DidLikeHit {
+        let didLikeHit = DidLikeHit()
+        didLikeHit.id = id
+        didLikeHit.url = imageURL
+        didLikeHit.imageWidth = Float(imageWidth)
+        didLikeHit.imageHeight = Float(imageHeight)
+        didLikeHit.userImageUrl = userImageUrl
+        didLikeHit.username = username
+        return didLikeHit
+    }
 }

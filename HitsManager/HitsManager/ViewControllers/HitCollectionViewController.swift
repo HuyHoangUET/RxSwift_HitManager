@@ -31,21 +31,12 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
         handleSellectedCell()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        collectionView.reloadData()
-    }
-    
     // Create cell
     func initHitCollectionViewCell() {
         self.viewModel.hitsRelay
             .bind(to: self.collectionView.rx.items(cellIdentifier: "cell",
                                               cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
-                cell.delegate = self
-                DidLikeHit.getAllResultId().subscribe(onNext: { didLikeHitsId in
-                    cell.handleLikeButton(didLikeHitsId: didLikeHitsId, hit: hit)
-                })
-                .disposed(by: bag)
+                cell.handleLikeButton(hit: hit)
                 cell.hit = hit
                 cell.configureCell()
             }
@@ -82,7 +73,6 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
             return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.hit.imageWidth,
                                                                      imageHeight: cell.hit.imageHeight)
         }
-        
         return SizeOfCollectionViewItem.getSizeForItem()
     }
     
@@ -106,23 +96,6 @@ extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
         if indexPaths.last?.row == viewModel.hitsRelay.value.count - 1 {
             viewModel.curentPageRelay.accept(1)
         }
-    }
-}
-
-// Handle like image
-extension HitCollectionViewController: HitCollectionViewDelegate {
-    
-    func didLikeImage(hit: Hit) {
-        DidLikeHit.getAllResultId().subscribe(onNext: { hitsId in
-            if !Set(hitsId).isSuperset(of: [hit.id]) {
-                DidLikeHit.addAnObject(hit: hit)
-            }
-        })
-        .disposed(by: bag)
-    }
-    
-    func didDisLikeImage(id: Int) {
-        DidLikeHit.deleteAnObject(id: id)
     }
 }
 

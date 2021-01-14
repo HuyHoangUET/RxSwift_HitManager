@@ -14,7 +14,6 @@ class HitCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     
-    weak var delegate: HitCollectionViewDelegate?
     var hit = Hit()
     
     override func prepareForReuse() {
@@ -32,24 +31,27 @@ class HitCollectionViewCell: UICollectionViewCell {
                        options: options, into: imageView)
     }
     
-    func handleLikeButton(didLikeHitsId: [Int], hit: Hit) {
-        if Set(didLikeHitsId).isSuperset(of: [hit.id]) {
+    func handleLikeButton(hit: Hit) {
+        DidLikeHit.asObservable().subscribe(onNext: { result in
+            if Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
                 self.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             } else {
                 self.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
             }
+        })
+        .disposed(by: bag)
     }
     
     // MARK: - action
     @IBAction func likeButton(_ sender: UIButton) {
         let heartImage = UIImage(systemName: "heart.fill")
         if sender.currentImage == heartImage {
-            sender.setImage(UIImage(systemName: "heart"), for: .normal)
-            delegate?.didDisLikeImage(id: hit.id)
+            DidLikeHit.deleteAnObject(id: hit.id)
         } else {
-            sender.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            delegate?.didLikeImage(hit: hit)
-            
+            let result = DidLikeHit.getAllResult()
+            if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
+                DidLikeHit.addAnObject(hit: hit)
+            }
         }
     }
 }
