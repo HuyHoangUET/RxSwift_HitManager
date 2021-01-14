@@ -13,7 +13,6 @@ import RxDataSources
 import RxRealm
 import RealmSwift
 
-let bag = DisposeBag()
 class UserCollectionViewController: UIViewController {
     
     // MARK: - outlet
@@ -24,7 +23,8 @@ class UserCollectionViewController: UIViewController {
     @IBOutlet weak var imageCollectionView: UICollectionView!
     
     private let userViewModel = UserViewModel()
-    
+    private let bag = DisposeBag()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         imageCollectionView.delegate = self
@@ -84,7 +84,6 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         return SizeOfCollectionViewItem.getSizeForItem()
-
     }
     
     func collectionView(_ collectionView: UICollectionView,
