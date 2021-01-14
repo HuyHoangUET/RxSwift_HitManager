@@ -33,8 +33,11 @@ class UserTableViewController: UIViewController {
         // init cell
         initUserTableViewCell()
     }
-    
-    // Create cell
+}
+
+// MARK: - function
+extension UserTableViewController {
+    // create cell
     func initUserTableViewCell() {
         DidLikeHit.asObservable()
             .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
@@ -44,14 +47,12 @@ class UserTableViewController: UIViewController {
                 cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
                                                            imageHeight: CGFloat(hit.imageHeight))
                 cell.handleLikeButton(hit: hit, didDisLikeHitsId: self.userViewModel!.didDislikeHitsId)
-                cell.delegate = self
                 cell.configureCell()
             }
             .disposed(by: bag)
     }
-}
-
-extension UserTableViewController {
+    
+    // scroll to sellected image
     func scrollToRow(){
         DispatchQueue.main.async {
             guard self.userViewModel != nil else {
@@ -65,16 +66,5 @@ extension UserTableViewController {
                     .disposed(by: bag)
             }
         }
-    }
-}
-
-extension UserTableViewController: UserTableViewCellDelegate {
-    func didLikeImage(id: Int) {
-//        userViewModel?.didDislikeHitsId.remove(id)
-    }
-    
-    func didDisLikeImage(id: Int) {
-//        userViewModel?.didDislikeHitsId.insert(id)
-        DidLikeHit.deleteAnObject(id: id)
     }
 }
