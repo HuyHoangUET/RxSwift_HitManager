@@ -16,6 +16,7 @@ class ViewModel {
     private var curentPage = 0
     var curentPageRelay = BehaviorRelay<Int>(value: 1)
     var hitsRelay = BehaviorRelay<[Hit]>(value: [])
+    private let bag = DisposeBag()
     
     func getHitsByPage() {
         let url = apiURL + "&page=\(String(describing: self.curentPage))"

@@ -20,6 +20,7 @@ class UserTableViewController: UIViewController {
     
     var userViewModel: UserViewModel?
     private var isSubcribe = true
+    private let bag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,7 +64,7 @@ extension UserTableViewController {
                     .subscribe(onNext: { indexPath in
                         self.hitTableView.scrollToRow(at: indexPath, at: .top, animated: false)
                     })
-                    .disposed(by: bag)
+                    .disposed(by: self.bag)
             }
         }
     }

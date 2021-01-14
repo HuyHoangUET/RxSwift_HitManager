@@ -19,6 +19,7 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
     
     private let viewModel = ViewModel()
     private let userView = UserCollectionViewController()
+    private let bag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()

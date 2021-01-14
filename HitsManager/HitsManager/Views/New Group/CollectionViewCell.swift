@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import Nuke
+import RxSwift
 
 class HitCollectionViewCell: UICollectionViewCell {
     // MARK: - outlet
@@ -15,6 +16,7 @@ class HitCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var likeButton: UIButton!
     
     var hit = Hit()
+    private let bag = DisposeBag()
     
     override func prepareForReuse() {
         super.prepareForReuse()
