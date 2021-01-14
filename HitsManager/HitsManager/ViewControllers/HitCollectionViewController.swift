@@ -31,11 +31,6 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
         handleSellectedCell()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        collectionView.reloadData()
-    }
-    
     // Create cell
     func initHitCollectionViewCell() {
         self.viewModel.hitsRelay
