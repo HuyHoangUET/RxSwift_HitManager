@@ -39,12 +39,7 @@ class UserTableViewController: UIViewController {
         DidLikeHit.asObservable()
             .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
                                             cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
-                let hit = Hit(id: didLikeHit.id,
-                               imageUrl: didLikeHit.url,
-                               imageWidth: CGFloat(didLikeHit.imageWidth),
-                               imageHeight: CGFloat(didLikeHit.imageHeight),
-                               userImageUrl: didLikeHit.userImageUrl,
-                               username: didLikeHit.username)
+                let hit = didLikeHit.asHit()
                 cell.hit = hit
                 cell.setHeightOfHitImageView(imageWidth: CGFloat(didLikeHit.imageWidth),
                                                            imageHeight: CGFloat(hit.imageHeight))

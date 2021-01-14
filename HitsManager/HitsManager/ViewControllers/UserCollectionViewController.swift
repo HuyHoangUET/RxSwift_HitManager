@@ -56,12 +56,7 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
         .bind(to: self.imageCollectionView.rx.items(cellIdentifier: "cell",
                                                cellType: HitCollectionViewCell.self))
         { indexPath, didLikeHit, cell in
-            let hit = Hit(id: didLikeHit.id,
-                          imageUrl: didLikeHit.url,
-                          imageWidth: CGFloat(didLikeHit.imageWidth),
-                          imageHeight: CGFloat(didLikeHit.imageHeight),
-                          userImageUrl: didLikeHit.userImageUrl,
-                          username: didLikeHit.username)
+            let hit = didLikeHit.asHit()
             cell.hit = hit
             cell.likeButton.isHidden = true
             cell.configureCell()

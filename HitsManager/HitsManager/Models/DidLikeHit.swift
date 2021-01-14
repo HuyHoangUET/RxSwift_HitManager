@@ -26,7 +26,7 @@ class DidLikeHit: Object {
     static func addAnObject(hit: Hit) {
         do {
             let realm = try Realm()
-            let didLikeImage = convertToDidLikeHit(hit: hit)
+            let didLikeImage = hit.asDidLikeHit()
             Observable.from(object: didLikeImage)
                 .subscribe(realm.rx.add())
                 .disposed(by: DisposeBag())
@@ -38,10 +38,10 @@ class DidLikeHit: Object {
     static func deleteAnObject(id: Int) {
         do {
             let realm = try Realm()
-            guard let didLikeImage = realm.object(ofType: self,
+            guard let didLikeHit = realm.object(ofType: self,
                                                   forPrimaryKey: id) else { return }
             try realm.write {
-                realm.delete(didLikeImage)
+                realm.delete(didLikeHit)
             }
         } catch let error {
             print("Delete object failed: \(error.localizedDescription)")
@@ -50,22 +50,16 @@ class DidLikeHit: Object {
     
     static func getAllResult() -> Results<DidLikeHit> {
         let realm = try! Realm()
-        return realm.objects(DidLikeHit.self)
+        return realm.objects(self)
     }
     
     static func asObservable() -> Observable<Results<DidLikeHit>> {
         let realm = try! Realm()
-        return Observable.collection(from: realm.objects(DidLikeHit.self))
+        return Observable.collection(from: realm.objects(self))
     }
     
-    static func convertToDidLikeHit(hit: Hit) -> DidLikeHit {
-        let didLikeHit = DidLikeHit()
-        didLikeHit.id = hit.id
-        didLikeHit.url = hit.imageURL
-        didLikeHit.imageWidth = Float(hit.imageWidth)
-        didLikeHit.imageHeight = Float(hit.imageHeight)
-        didLikeHit.userImageUrl = hit.userImageUrl
-        didLikeHit.username = hit.username
-        return didLikeHit
+    func asHit() -> Hit {
+        let hit = Hit(id: id, imageUrl: url, imageWidth: CGFloat(imageWidth), imageHeight: CGFloat(imageHeight), userImageUrl: userImageUrl, username: username)
+        return hit
     }
 }
