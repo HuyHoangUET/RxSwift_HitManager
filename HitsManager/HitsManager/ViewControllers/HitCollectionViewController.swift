@@ -42,10 +42,6 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
             .bind(to: self.collectionView.rx.items(cellIdentifier: "cell",
                                               cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
                 cell.delegate = self
-//                DidLikeHit.getAllResultId().subscribe(onNext: { didLikeHitsId in
-//                    cell.handleLikeButton(didLikeHitsId: didLikeHitsId, hit: hit)
-//                })
-//                .disposed(by: bag)
                 cell.handleLikeButton(hit: hit)
                 cell.hit = hit
                 cell.configureCell()
@@ -114,12 +110,10 @@ extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
 extension HitCollectionViewController: HitCollectionViewDelegate {
     
     func didLikeImage(hit: Hit) {
-        DidLikeHit.getAllResultId().subscribe(onNext: { hitsId in
-            if !Set(hitsId).isSuperset(of: [hit.id]) {
-                DidLikeHit.addAnObject(hit: hit)
-            }
-        })
-        .disposed(by: bag)
+        let result = DidLikeHit.getAllResult()
+        if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
+            DidLikeHit.addAnObject(hit: hit)
+        }
     }
     
     func didDisLikeImage(id: Int) {

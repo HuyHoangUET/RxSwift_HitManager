@@ -36,7 +36,7 @@ class UserTableViewController: UIViewController {
     
     // Create cell
     func initUserTableViewCell() {
-        DidLikeHit.getAllResult()
+        DidLikeHit.asObservable()
             .bind(to: self.hitTableView.rx.items(cellIdentifier: "cell",
                                             cellType: HitTableViewCell.self)) {indexPath, didLikeHit, cell in
                 let hit = Hit(id: didLikeHit.id,
@@ -75,11 +75,11 @@ extension UserTableViewController {
 
 extension UserTableViewController: UserTableViewCellDelegate {
     func didLikeImage(id: Int) {
-        userViewModel?.didDislikeHitsId.remove(id)
+//        userViewModel?.didDislikeHitsId.remove(id)
     }
     
     func didDisLikeImage(id: Int) {
-        userViewModel?.didDislikeHitsId.insert(id)
+//        userViewModel?.didDislikeHitsId.insert(id)
         DidLikeHit.deleteAnObject(id: id)
     }
 }

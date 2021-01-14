@@ -48,28 +48,16 @@ class DidLikeHit: Object {
         }
     }
     
-    static func getAllResult() -> Observable<Results<DidLikeHit>> {
+    static func getAllResult() -> Results<DidLikeHit> {
+        let realm = try! Realm()
+        return realm.objects(DidLikeHit.self)
+    }
+    
+    static func asObservable() -> Observable<Results<DidLikeHit>> {
         let realm = try! Realm()
         return Observable.collection(from: realm.objects(DidLikeHit.self))
     }
     
-    static func getAllResultId() -> Observable<[Int]> {
-        return Observable.create{ observer in
-            do {
-                let realm = try Realm()
-                var hitsId: [Int] = []
-                let hits = Array(realm.objects(DidLikeHit.self))
-                for hit in hits {
-                    hitsId.append(hit.id)
-                }
-                observer.onNext(hitsId)
-                observer.onCompleted()
-            } catch let error {
-                print("Get all id form DidLikeHit failed: \(error)")
-            }
-            return Disposables.create()
-        }
-    }
     static func convertToDidLikeHit(hit: Hit) -> DidLikeHit {
         let didLikeHit = DidLikeHit()
         didLikeHit.id = hit.id

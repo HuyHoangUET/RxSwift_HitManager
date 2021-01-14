@@ -52,7 +52,7 @@ class UserCollectionViewController: UIViewController{
 extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
-    DidLikeHit.getAllResult()
+    DidLikeHit.asObservable()
         .bind(to: self.imageCollectionView.rx.items(cellIdentifier: "cell",
                                                cellType: HitCollectionViewCell.self))
         { indexPath, didLikeHit, cell in
@@ -117,7 +117,7 @@ extension UserCollectionViewController {
     }
     
     func customNumberOfImageLabel() {
-        DidLikeHit.getAllResult().subscribe( onNext: { result in
+        DidLikeHit.asObservable().subscribe( onNext: { result in
             self.numberOfImagesLabel.text = "\(result.count) ảnh đã thích"
         })
         .disposed(by: bag)
