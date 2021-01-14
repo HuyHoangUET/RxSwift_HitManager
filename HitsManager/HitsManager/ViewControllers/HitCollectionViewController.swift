@@ -73,7 +73,6 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
             return SizeOfCollectionViewItem.getSizeForDidSellectItem(imageWidth: cell.hit.imageWidth,
                                                                      imageHeight: cell.hit.imageHeight)
         }
-        
         return SizeOfCollectionViewItem.getSizeForItem()
     }
     
