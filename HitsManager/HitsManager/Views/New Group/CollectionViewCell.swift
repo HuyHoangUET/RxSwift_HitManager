@@ -14,7 +14,6 @@ class HitCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     
-    weak var delegate: HitCollectionViewDelegate?
     var hit = Hit()
     
     override func prepareForReuse() {
@@ -47,12 +46,12 @@ class HitCollectionViewCell: UICollectionViewCell {
     @IBAction func likeButton(_ sender: UIButton) {
         let heartImage = UIImage(systemName: "heart.fill")
         if sender.currentImage == heartImage {
-            sender.setImage(UIImage(systemName: "heart"), for: .normal)
-            delegate?.didDisLikeImage(id: hit.id)
+            DidLikeHit.deleteAnObject(id: hit.id)
         } else {
-            sender.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-            delegate?.didLikeImage(hit: hit)
-            
+            let result = DidLikeHit.getAllResult()
+            if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
+                DidLikeHit.addAnObject(hit: hit)
+            }
         }
     }
 }

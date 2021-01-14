@@ -14,7 +14,7 @@ import RxRealm
 import RealmSwift
 
 let bag = DisposeBag()
-class UserCollectionViewController: UIViewController{
+class UserCollectionViewController: UIViewController {
     
     // MARK: - outlet
     @IBOutlet weak var userView: UIView!

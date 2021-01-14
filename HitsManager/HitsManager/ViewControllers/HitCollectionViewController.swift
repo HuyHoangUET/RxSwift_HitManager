@@ -36,7 +36,6 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
         self.viewModel.hitsRelay
             .bind(to: self.collectionView.rx.items(cellIdentifier: "cell",
                                               cellType: HitCollectionViewCell.self)) { indexPath,hit,cell in
-                cell.delegate = self
                 cell.handleLikeButton(hit: hit)
                 cell.hit = hit
                 cell.configureCell()
@@ -98,21 +97,6 @@ extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
         if indexPaths.last?.row == viewModel.hitsRelay.value.count - 1 {
             viewModel.curentPageRelay.accept(1)
         }
-    }
-}
-
-// Handle like image
-extension HitCollectionViewController: HitCollectionViewDelegate {
-    
-    func didLikeImage(hit: Hit) {
-        let result = DidLikeHit.getAllResult()
-        if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
-            DidLikeHit.addAnObject(hit: hit)
-        }
-    }
-    
-    func didDisLikeImage(id: Int) {
-        DidLikeHit.deleteAnObject(id: id)
     }
 }
 
