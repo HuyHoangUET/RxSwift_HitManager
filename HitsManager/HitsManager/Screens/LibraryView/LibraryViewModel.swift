@@ -12,7 +12,7 @@ import RxCocoa
 import RxRealm
 import RealmSwift
 
-class UserViewModel {
+class LibraryViewModel {
     var isDisplayCellAtChosenIndexPath = true
     let chosenIndexPathSubject = BehaviorSubject<IndexPath>(value: IndexPath())
     var chosenIndexPath: Observable<IndexPath> {

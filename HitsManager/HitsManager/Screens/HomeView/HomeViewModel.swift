@@ -11,7 +11,7 @@ import RealmSwift
 import RxSwift
 import RxCocoa
 
-class ViewModel {
+class HomeViewModel {
     var sellectedCell = IndexPath()
     private var curentPage = 0
     var curentPageRelay = BehaviorRelay<Int>(value: 1)

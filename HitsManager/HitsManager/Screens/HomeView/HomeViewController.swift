@@ -12,13 +12,12 @@ import RxCocoa
 import RxDataSources
 import RealmSwift
 
-class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
+class HomeViewController: UIViewController, UICollectionViewDelegate {
     // MARK: - outlet
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var mainView: UIView!
     
-    private let viewModel = ViewModel()
-    private let userView = UserCollectionViewController()
+    private let viewModel = HomeViewModel()
     private let bag = DisposeBag()
     
     override func viewDidLoad() {
@@ -59,7 +58,7 @@ class HitCollectionViewController: UIViewController, UICollectionViewDelegate {
 }
 
 // Custom cell
-extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -91,7 +90,7 @@ extension HitCollectionViewController: UICollectionViewDelegateFlowLayout {
 }
 
 // Load next page
-extension HitCollectionViewController: UICollectionViewDataSourcePrefetching {
+extension HomeViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView,
                         prefetchItemsAt indexPaths: [IndexPath]) {
         if indexPaths.last?.row == viewModel.hitsRelay.value.count - 1 {

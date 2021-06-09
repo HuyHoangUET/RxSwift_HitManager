@@ -13,13 +13,12 @@ import RxDataSources
 import RxRealm
 import RealmSwift
 
-class UserTableViewController: UIViewController {
+class StoryViewController: UIViewController {
     
     // MARK: - outlet
     @IBOutlet weak var hitTableView: UITableView!
     
-    var userViewModel: UserViewModel?
-    private var isSubcribe = true
+    var userViewModel: LibraryViewModel?
     private let bag = DisposeBag()
     
     override func viewDidLoad() {
@@ -37,7 +36,7 @@ class UserTableViewController: UIViewController {
 }
 
 // MARK: - function
-extension UserTableViewController {
+extension StoryViewController {
     // create cell
     func initUserTableViewCell() {
         DidLikeHit.asObservable()

@@ -52,16 +52,16 @@ class HitTableViewCell: UITableViewCell {
     }
     
     func setImageForUserView() {
-        usernameLabel.text = hit.username
+        usernameLabel.text = hit.autherName
         setBoundsToUserImage()
         let options = ImageLoadingOptions(
             placeholder: UIImage(systemName: "person.circle")
             )
-        guard hit.userImageUrl != "" else {
+        guard hit.autherImageUrl != "" else {
             userImageView.image = UIImage(systemName: "person.circle")
             return
         }
-        let request = ImageRequest(url: URL(string: hit.userImageUrl)!,
+        let request = ImageRequest(url: URL(string: hit.autherImageUrl)!,
                                    processors: [ImageProcessors.Circle()])
         Nuke.loadImage(with: request, options: options, into: userImageView)
     }
@@ -72,7 +72,7 @@ class HitTableViewCell: UITableViewCell {
     }
     
     func handleLikeButton(hit: Hit, didDisLikeHitsId: Set<Int>) {
-        if didDisLikeHitsId.isSuperset(of: [hit.id]){
+        if didDisLikeHitsId.isSuperset(of: [hit.imageId]){
             likeButton.setImage(UIImage(systemName: "heart",
                                         withConfiguration: scale), for: .normal)
         } else {
@@ -82,6 +82,6 @@ class HitTableViewCell: UITableViewCell {
     }
     // MARK: - action
     @IBAction func likeButton(_ sender: Any) {
-        DidLikeHit.deleteAnObject(id: hit.id)
+        DidLikeHit.deleteAnObject(id: hit.imageId)
     }
 }

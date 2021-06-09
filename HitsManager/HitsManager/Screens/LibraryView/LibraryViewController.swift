@@ -13,7 +13,7 @@ import RxDataSources
 import RxRealm
 import RealmSwift
 
-class UserCollectionViewController: UIViewController {
+class LibraryViewController: UIViewController {
     
     // MARK: - outlet
     @IBOutlet weak var userView: UIView!
@@ -22,7 +22,7 @@ class UserCollectionViewController: UIViewController {
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var imageCollectionView: UICollectionView!
     
-    private let userViewModel = UserViewModel()
+    private let userViewModel = LibraryViewModel()
     private let bag = DisposeBag()
 
     override func viewDidLoad() {
@@ -42,14 +42,10 @@ class UserCollectionViewController: UIViewController {
         super.viewWillAppear(false)
         customNumberOfImageLabel()
     }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(false)
-    }
 }
 
 // MARK: - cell
-extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
+extension LibraryViewController: UICollectionViewDelegateFlowLayout {
     // Create cell
     func initUserCollectionViewCell() {
     DidLikeHit.asObservable()
@@ -100,7 +96,7 @@ extension UserCollectionViewController: UICollectionViewDelegateFlowLayout {
 }
 
 // MARK: - userView
-extension UserCollectionViewController {
+extension LibraryViewController {
     func customUserImage() {
         userImageView.layer.cornerRadius = userImageView.frame.width / 2.0
         userImageView.layer.masksToBounds = true
@@ -118,10 +114,10 @@ extension UserCollectionViewController {
     }
 }
 
-extension UserCollectionViewController {
+extension LibraryViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.destination is UserTableViewController {
-            let tableView = segue.destination as? UserTableViewController
+        if segue.destination is StoryViewController {
+            let tableView = segue.destination as? StoryViewController
             userViewModel.isDisplayCellAtChosenIndexPath = true
             tableView?.userViewModel = userViewModel
         }

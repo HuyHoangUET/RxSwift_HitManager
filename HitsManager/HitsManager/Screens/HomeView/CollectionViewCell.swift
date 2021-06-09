@@ -35,7 +35,7 @@ class HitCollectionViewCell: UICollectionViewCell {
     
     func handleLikeButton(hit: Hit) {
         DidLikeHit.asObservable().subscribe(onNext: { result in
-            if Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
+            if Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.imageId]) {
                 self.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             } else {
                 self.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
@@ -48,10 +48,10 @@ class HitCollectionViewCell: UICollectionViewCell {
     @IBAction func likeButton(_ sender: UIButton) {
         let heartImage = UIImage(systemName: "heart.fill")
         if sender.currentImage == heartImage {
-            DidLikeHit.deleteAnObject(id: hit.id)
+            DidLikeHit.deleteAnObject(id: hit.imageId)
         } else {
             let result = DidLikeHit.getAllResult()
-            if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.id]) {
+            if !Set(result.value(forKey: "id") as! [Int]).isSuperset(of: [hit.imageId]) {
                 DidLikeHit.addAnObject(hit: hit)
             }
         }

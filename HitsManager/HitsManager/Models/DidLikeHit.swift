@@ -16,8 +16,8 @@ class DidLikeHit: Object {
     @objc dynamic var url = ""
     @objc dynamic var imageWidth: Float = 0
     @objc dynamic var imageHeight: Float = 0
-    @objc dynamic var userImageUrl = ""
-    @objc dynamic var username = ""
+    @objc dynamic var autherImageUrl = ""
+    @objc dynamic var autherName = ""
     
     override class func primaryKey() -> String? {
         return "id"
@@ -59,7 +59,7 @@ class DidLikeHit: Object {
     }
     
     func asHit() -> Hit {
-        let hit = Hit(id: id, imageUrl: url, imageWidth: CGFloat(imageWidth), imageHeight: CGFloat(imageHeight), userImageUrl: userImageUrl, username: username)
+        let hit = Hit(id: id, imageUrl: url, imageWidth: CGFloat(imageWidth), imageHeight: CGFloat(imageHeight), userImageUrl: autherImageUrl, username: autherName)
         return hit
     }
 }
